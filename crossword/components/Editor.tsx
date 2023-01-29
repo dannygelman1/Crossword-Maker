@@ -14,23 +14,37 @@ export const Editor = (): ReactElement => {
   return (
     <div className="flex items-start justify-center h-full w-full bg-red-400 absolute">
       <div className="mt-5 w-[1000px] h-[500px] border-8 border-green-500 relative">
-        {boxes.map((box, i) => (
-          <div
-            key={i}
-            className="w-5 h-5 border-2 border-black absolute flex items-center justify-center"
-            style={{ left: `${box.x}px`, bottom: `${box.y}px` }}
-            onClick={() => {
-              if (textMode) return;
-              setSelected(i);
-            }}
-          >
-            <input
-              className="w-4 h-4 bg-transparent outline-none capitalize p-[2px]"
-              disabled={!textMode}
-              defaultValue={box.letter}
-            />
-          </div>
-        ))}
+        {boxes.map((box, i) => {
+          console.log(box);
+          return (
+            <div
+              key={i}
+              className="w-5 h-5 border-2 border-black absolute flex items-center justify-center"
+              style={{ left: `${box.x}px`, bottom: `${box.y}px` }}
+              onClick={() => {
+                if (textMode) return;
+                setSelected(i);
+              }}
+            >
+              <input
+                className="w-4 h-4 bg-transparent outline-none capitalize p-[2px]"
+                disabled={!textMode}
+                defaultValue={box.letter}
+                type="text"
+                pattern="[a-zA-Z]{1}"
+                maxLength={1}
+                onChange={(event) => {
+                  if (!/^[a-zA-Z]$/.test(event.target.value)) {
+                    event.target.value = "";
+                  }
+                  box.setLetter(event.target.value);
+                  boxes[i] = box;
+                  setBoxes(boxes);
+                }}
+              />
+            </div>
+          );
+        })}
         {!textMode &&
           neighbors.map((box, i) => (
             <div

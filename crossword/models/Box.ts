@@ -8,4 +8,8 @@ export class Box {
     this.y = y;
     this.letter = letter;
   }
+
+  setLetter(letter: string) {
+    this.letter = letter;
+  }
 }
