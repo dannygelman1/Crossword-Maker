@@ -1,11 +1,20 @@
 import { Box } from "models/Box";
-import { ReactElement, useEffect, useState } from "react";
+import {
+  ReactElement,
+  useEffect,
+  useState,
+  KeyboardEvent,
+  useRef,
+} from "react";
+import cn from "classnames";
 
 export const Editor = (): ReactElement => {
   const [selected, setSelected] = useState<number>(0);
+  const [selectedTextMode, setSelectedTextMode] = useState<number>(-1);
   const [boxes, setBoxes] = useState<Box[]>([new Box(500, 250, "")]);
   const [neighbors, setNeighbors] = useState<Box[]>([]);
   const [textMode, setTextMode] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setNeighbors(getNeighbors(boxes[selected], boxes));
@@ -19,7 +28,13 @@ export const Editor = (): ReactElement => {
           return (
             <div
               key={i}
-              className="w-5 h-5 border-2 border-black absolute flex items-center justify-center"
+              className={cn(
+                "w-5 h-5 border-2 absolute flex items-center justify-center z-10",
+                {
+                  "border-blue-800": selected === i,
+                  "border-black": selected !== i,
+                }
+              )}
               style={{ left: `${box.x}px`, bottom: `${box.y}px` }}
               onClick={() => {
                 if (textMode) return;
@@ -27,15 +42,28 @@ export const Editor = (): ReactElement => {
               }}
             >
               <input
-                className="w-4 h-4 bg-transparent outline-none capitalize p-[2px]"
+                ref={inputRef}
+                className={cn("w-4 h-4 outline-none capitalize p-[2px]", {
+                  "bg-yellow-300": selectedTextMode === i,
+                  "bg-transparent": selectedTextMode !== i,
+                })}
                 disabled={!textMode}
                 defaultValue={box.letter}
                 type="text"
                 pattern="[a-zA-Z]{1}"
                 maxLength={1}
+                style={{ caretColor: "transparent" }}
+                onClick={() => setSelectedTextMode(i)}
+                onKeyDown={(e) => {
+                  const val = (e.target as HTMLInputElement).value;
+                  (e.target as HTMLInputElement).value = "";
+                  boxes[i].setLetter(val);
+                  setBoxes(boxes);
+                }}
                 onChange={(event) => {
+                  console.log(event.target.value);
                   if (!/^[a-zA-Z]$/.test(event.target.value)) {
-                    event.target.value = "";
+                    event.target.value = box.letter === "" ? "" : box.letter;
                   }
                   box.setLetter(event.target.value);
                   boxes[i] = box;
@@ -49,7 +77,7 @@ export const Editor = (): ReactElement => {
           neighbors.map((box, i) => (
             <div
               key={i}
-              className="w-5 h-5 border-2 border-black/30 absolute"
+              className="w-5 h-5 border-2 border-black/30 absolute z-5"
               style={{ left: `${box.x}px`, bottom: `${box.y}px` }}
               onClick={() => {
                 if (textMode) return;
@@ -75,10 +103,10 @@ export const Editor = (): ReactElement => {
 
 const getNeighbors = (pos: Box, existing: Box[]): Box[] => {
   const neighbors = [
-    new Box(pos.x - 18, pos.y, ""),
-    new Box(pos.x + 18, pos.y, ""),
-    new Box(pos.x, pos.y - 18, ""),
-    new Box(pos.x, pos.y + 18, ""),
+    new Box(pos.x - 22, pos.y, ""),
+    new Box(pos.x + 22, pos.y, ""),
+    new Box(pos.x, pos.y - 22, ""),
+    new Box(pos.x, pos.y + 22, ""),
   ];
   const existingString = existing.map((e) => JSON.stringify(e));
   return neighbors.filter((n) => !existingString.includes(JSON.stringify(n)));
