@@ -6,23 +6,29 @@ import {
   KeyboardEvent,
   useRef,
 } from "react";
+import { isEqual } from "lodash";
 import cn from "classnames";
 
 export const Editor = (): ReactElement => {
-  const [selected, setSelected] = useState<number>(0);
-  const [selectedTextMode, setSelectedTextMode] = useState<number>(-1);
-  const boxSize = 30;
-  const boxSpace = 0;
-  const [boxes, setBoxes] = useState<Box[]>(
-    Array.from(Array(20)).map(
-      (val, i) =>
-        new Box(
-          500 - i * (boxSize + boxSpace),
-          250 - i * (boxSize + boxSpace),
-          ""
-        )
-    )
+  const firstBox = new Box(0, 500, 250, 0, 0, "", "center");
+  const [selected, setSelected] = useState<Box>(firstBox);
+  const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
+    undefined
   );
+  const boxSize = 30;
+  const boxSpace = 1;
+  // const [boxes, setBoxes] = useState<Box[]>(
+  //   Array.from(Array(20)).map(
+  //     (val, i) =>
+  //       new Box(
+  //         500 - i * (boxSize + boxSpace),
+  //         250 - i * (boxSize + boxSpace),
+  //         "",
+  //         "center"
+  //       )
+  //   )
+  // );
+  const [boxes, setBoxes] = useState<Box[]>([firstBox]);
   const [neighbors, setNeighbors] = useState<Box[]>([]);
   const [textMode, setTextMode] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,8 +40,22 @@ export const Editor = (): ReactElement => {
   const [startCoordinates, setStartCoordinates] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    setNeighbors(getNeighbors(boxes[selected], boxes, boxSize, boxSpace));
+    setNeighbors(getNeighbors(selected, boxes, boxSize, boxSpace));
   }, [selected]);
+
+  useEffect(() => {
+    const sortedBoxes = boxes.sort((a, b) => {
+      if (a.y !== b.y) return b.y - a.y;
+      return a.x - b.x;
+    });
+    let i = 1;
+    for (const box of sortedBoxes) {
+      if (shouldHaveNumber(box, boxes)) {
+        box.setNumber(i);
+        i += 1;
+      } else box.unsetNumber();
+    }
+  }, [boxes.length]);
 
   useEffect(() => {
     const preventDefault = (event: MouseEvent) => {
@@ -58,7 +78,6 @@ export const Editor = (): ReactElement => {
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-      console.log(position, event.clientX, event.clientY, startCoordinates);
       if (isDragging) {
         setPosition({
           x: position.x + (event.clientX - startCoordinates.x) * 0.5,
@@ -115,8 +134,12 @@ export const Editor = (): ReactElement => {
                 className={cn(
                   "border-2 absolute flex items-center justify-center z-10",
                   {
-                    "border-blue-800": selected === i,
-                    "border-black": selected !== i,
+                    "border-blue-800": isEqual(selected, box),
+                    "border-black": !isEqual(selected, box),
+                    // "border-t-0": box.relPos === "bottom",
+                    // "border-b-0": box.relPos === "top",
+                    // "border-l-0": box.relPos === "right",
+                    // "border-r-0": box.relPos === "left",
                   }
                 )}
                 style={{
@@ -127,14 +150,19 @@ export const Editor = (): ReactElement => {
                 }}
                 onClick={() => {
                   if (textMode) return;
-                  setSelected(i);
+                  setSelected(box);
                 }}
               >
+                {box?.number && (
+                  <div className="text-[8px] absolute top-0 left-[1px]">
+                    {box.number}
+                  </div>
+                )}
                 <input
                   ref={inputRef}
                   className={cn("outline-none capitalize p-[2px] text-center", {
-                    "bg-yellow-300": selectedTextMode === i,
-                    "bg-transparent": selectedTextMode !== i,
+                    "bg-yellow-300": isEqual(selectedTextMode, box),
+                    "bg-transparent": !isEqual(selectedTextMode, box),
                   })}
                   style={{
                     width: `${boxSize - 4}px`,
@@ -146,22 +174,18 @@ export const Editor = (): ReactElement => {
                   type="text"
                   pattern="[a-zA-Z]{1}"
                   maxLength={1}
-                  onFocus={() => setSelectedTextMode(i)}
-                  onBlur={() => setSelectedTextMode(-1)}
+                  onFocus={() => setSelectedTextMode(box)}
+                  onBlur={() => setSelectedTextMode(undefined)}
                   onKeyDown={(e) => {
                     const val = (e.target as HTMLInputElement).value;
                     (e.target as HTMLInputElement).value = "";
-                    boxes[i].setLetter(val);
-                    setBoxes(boxes);
+                    box.setLetter(val);
                   }}
                   onChange={(event) => {
-                    console.log(event.target.value);
                     if (!/^[a-zA-Z]$/.test(event.target.value)) {
                       event.target.value = box.letter === "" ? "" : box.letter;
                     }
                     box.setLetter(event.target.value);
-                    boxes[i] = box;
-                    setBoxes(boxes);
                   }}
                 />
               </div>
@@ -171,7 +195,12 @@ export const Editor = (): ReactElement => {
             neighbors.map((box, i) => (
               <div
                 key={i}
-                className="border-2 border-black/30 absolute z-5"
+                className={cn("border-2 border-black/30 absolute z-5", {
+                  // "border-t-0": box.relPos === "bottom",
+                  // "border-b-0": box.relPos === "top",
+                  // "border-l-0": box.relPos === "right",
+                  // "border-r-0": box.relPos === "left",
+                })}
                 style={{
                   left: `${box.x}px`,
                   bottom: `${box.y}px`,
@@ -202,17 +231,72 @@ export const Editor = (): ReactElement => {
 };
 
 const getNeighbors = (
-  pos: Box,
+  box: Box,
   existing: Box[],
   boxSize: number,
   boxSpace: number
 ): Box[] => {
   const neighbors = [
-    new Box(pos.x - (boxSize + boxSpace), pos.y, ""),
-    new Box(pos.x + (boxSize + boxSpace), pos.y, ""),
-    new Box(pos.x, pos.y - (boxSize + boxSpace), ""),
-    new Box(pos.x, pos.y + (boxSize + boxSpace), ""),
+    new Box(
+      existing.length + 1,
+      box.x - (boxSize + boxSpace),
+      box.y,
+      box.gridX - 1,
+      box.gridY,
+      "",
+      "left"
+    ),
+    new Box(
+      existing.length + 2,
+      box.x + (boxSize + boxSpace),
+      box.y,
+      box.gridX + 1,
+      box.gridY,
+      "",
+      "right"
+    ),
+    new Box(
+      existing.length + 3,
+      box.x,
+      box.y - (boxSize + boxSpace),
+      box.gridX,
+      box.gridY - 1,
+      "",
+      "bottom"
+    ),
+    new Box(
+      existing.length + 4,
+      box.x,
+      box.y + (boxSize + boxSpace),
+      box.gridX,
+      box.gridY + 1,
+      "",
+      "top"
+    ),
   ];
   const existingString = existing.map((e) => JSON.stringify(e));
   return neighbors.filter((n) => !existingString.includes(JSON.stringify(n)));
+};
+
+const shouldHaveNumber = (box: Box, existing: Box[]): boolean => {
+  let above = [];
+  let left = [];
+  let below = [];
+  let right = [];
+  console.log(existing);
+  for (const existingBox of existing) {
+    if (box.x === existingBox.x && box.y < existingBox.y)
+      above.push(existingBox.gridY);
+    if (box.y === existingBox.y && box.x > existingBox.x)
+      left.push(existingBox.gridX);
+    if (box.x === existingBox.x && box.y > existingBox.y)
+      below.push(existingBox.gridY);
+    if (box.y === existingBox.y && box.x < existingBox.x)
+      right.push(existingBox.gridX);
+  }
+
+  return (
+    (!above.includes(box.gridY + 1) && below.includes(box.gridY - 1)) ||
+    (!left.includes(box.gridX - 1) && right.includes(box.gridX + 1))
+  );
 };
