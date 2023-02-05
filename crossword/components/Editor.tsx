@@ -11,9 +11,16 @@ import cn from "classnames";
 export const Editor = (): ReactElement => {
   const [selected, setSelected] = useState<number>(0);
   const [selectedTextMode, setSelectedTextMode] = useState<number>(-1);
+  const boxSize = 30;
+  const boxSpace = 0;
   const [boxes, setBoxes] = useState<Box[]>(
     Array.from(Array(20)).map(
-      (val, i) => new Box(500 - i * 22, 250 - i * 22, "")
+      (val, i) =>
+        new Box(
+          500 - i * (boxSize + boxSpace),
+          250 - i * (boxSize + boxSpace),
+          ""
+        )
     )
   );
   const [neighbors, setNeighbors] = useState<Box[]>([]);
@@ -27,7 +34,7 @@ export const Editor = (): ReactElement => {
   const [startCoordinates, setStartCoordinates] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    setNeighbors(getNeighbors(boxes[selected], boxes));
+    setNeighbors(getNeighbors(boxes[selected], boxes, boxSize, boxSpace));
   }, [selected]);
 
   useEffect(() => {
@@ -106,13 +113,18 @@ export const Editor = (): ReactElement => {
               <div
                 key={i}
                 className={cn(
-                  "w-5 h-5 border-2 absolute flex items-center justify-center z-10",
+                  "border-2 absolute flex items-center justify-center z-10",
                   {
                     "border-blue-800": selected === i,
                     "border-black": selected !== i,
                   }
                 )}
-                style={{ left: `${box.x}px`, bottom: `${box.y}px` }}
+                style={{
+                  left: `${box.x}px`,
+                  bottom: `${box.y}px`,
+                  width: `${boxSize}px`,
+                  height: ` ${boxSize}px`,
+                }}
                 onClick={() => {
                   if (textMode) return;
                   setSelected(i);
@@ -120,19 +132,20 @@ export const Editor = (): ReactElement => {
               >
                 <input
                   ref={inputRef}
-                  className={cn(
-                    "w-4 h-4 outline-none capitalize p-[2px] text-center",
-                    {
-                      "bg-yellow-300": selectedTextMode === i,
-                      "bg-transparent": selectedTextMode !== i,
-                    }
-                  )}
+                  className={cn("outline-none capitalize p-[2px] text-center", {
+                    "bg-yellow-300": selectedTextMode === i,
+                    "bg-transparent": selectedTextMode !== i,
+                  })}
+                  style={{
+                    width: `${boxSize - 4}px`,
+                    height: ` ${boxSize - 4}px`,
+                    caretColor: "transparent",
+                  }}
                   disabled={!textMode}
                   defaultValue={box.letter}
                   type="text"
                   pattern="[a-zA-Z]{1}"
                   maxLength={1}
-                  style={{ caretColor: "transparent" }}
                   onFocus={() => setSelectedTextMode(i)}
                   onBlur={() => setSelectedTextMode(-1)}
                   onKeyDown={(e) => {
@@ -158,8 +171,13 @@ export const Editor = (): ReactElement => {
             neighbors.map((box, i) => (
               <div
                 key={i}
-                className="w-5 h-5 border-2 border-black/30 absolute z-5"
-                style={{ left: `${box.x}px`, bottom: `${box.y}px` }}
+                className="border-2 border-black/30 absolute z-5"
+                style={{
+                  left: `${box.x}px`,
+                  bottom: `${box.y}px`,
+                  width: `${boxSize}px`,
+                  height: ` ${boxSize}px`,
+                }}
                 onClick={() => {
                   if (textMode) return;
                   boxes.push(box);
@@ -183,12 +201,17 @@ export const Editor = (): ReactElement => {
   );
 };
 
-const getNeighbors = (pos: Box, existing: Box[]): Box[] => {
+const getNeighbors = (
+  pos: Box,
+  existing: Box[],
+  boxSize: number,
+  boxSpace: number
+): Box[] => {
   const neighbors = [
-    new Box(pos.x - 22, pos.y, ""),
-    new Box(pos.x + 22, pos.y, ""),
-    new Box(pos.x, pos.y - 22, ""),
-    new Box(pos.x, pos.y + 22, ""),
+    new Box(pos.x - (boxSize + boxSpace), pos.y, ""),
+    new Box(pos.x + (boxSize + boxSpace), pos.y, ""),
+    new Box(pos.x, pos.y - (boxSize + boxSpace), ""),
+    new Box(pos.x, pos.y + (boxSize + boxSpace), ""),
   ];
   const existingString = existing.map((e) => JSON.stringify(e));
   return neighbors.filter((n) => !existingString.includes(JSON.stringify(n)));
