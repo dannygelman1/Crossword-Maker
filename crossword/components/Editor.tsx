@@ -8,30 +8,21 @@ import {
 } from "react";
 import { isEqual } from "lodash";
 import cn from "classnames";
-
+import { Input } from "./Input";
 export const Editor = (): ReactElement => {
-  const firstBox = new Box(0, 500, 250, 0, 0, "", "center");
-  const [selected, setSelected] = useState<Box>(firstBox);
+  const firstBox = new Box(1, 500, 250, 0, 0, "", "center");
+  const [selected, setSelected] = useState<Box | undefined>(firstBox);
+  const [numBoxesAdded, setNumBoxesAdded] = useState<number>(1);
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
   const boxSize = 30;
   const boxSpace = 1;
-  // const [boxes, setBoxes] = useState<Box[]>(
-  //   Array.from(Array(20)).map(
-  //     (val, i) =>
-  //       new Box(
-  //         500 - i * (boxSize + boxSpace),
-  //         250 - i * (boxSize + boxSpace),
-  //         "",
-  //         "center"
-  //       )
-  //   )
-  // );
   const [boxes, setBoxes] = useState<Box[]>([firstBox]);
   const [neighbors, setNeighbors] = useState<Box[]>([]);
-  const [textMode, setTextMode] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<"create" | "delete" | "text" | "block">(
+    "create"
+  );
   const editorRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -40,20 +31,25 @@ export const Editor = (): ReactElement => {
   const [startCoordinates, setStartCoordinates] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    setNeighbors(getNeighbors(selected, boxes, boxSize, boxSpace));
+    if (selected)
+      setNeighbors(
+        getNeighbors(selected, boxes, boxSize, boxSpace, numBoxesAdded)
+      );
   }, [selected]);
 
   useEffect(() => {
-    const sortedBoxes = boxes.sort((a, b) => {
+    const copy = [...boxes];
+    const sortedBoxes = copy.sort((a, b) => {
       if (a.y !== b.y) return b.y - a.y;
       return a.x - b.x;
     });
     let i = 1;
-    for (const box of sortedBoxes) {
-      if (shouldHaveNumber(box, boxes)) {
-        box.setNumber(i);
+    for (const sortedBox of sortedBoxes) {
+      const boxToChange = boxes.find((box) => box.id === sortedBox.id);
+      if (shouldHaveNumber(sortedBox, boxes)) {
+        boxToChange?.setNumber(i);
         i += 1;
-      } else box.unsetNumber();
+      } else boxToChange?.unsetNumber();
     }
   }, [boxes.length]);
 
@@ -127,19 +123,19 @@ export const Editor = (): ReactElement => {
             transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
           }}
         >
-          {boxes.map((box, i) => {
+          {boxes.map((box) => {
             return (
               <div
-                key={i}
+                key={box.id}
                 className={cn(
-                  "border-2 absolute flex items-center justify-center z-10",
+                  "border-2 absolute flex items-center justify-center z-10 ",
                   {
-                    "border-blue-800": isEqual(selected, box),
-                    "border-black": !isEqual(selected, box),
-                    // "border-t-0": box.relPos === "bottom",
-                    // "border-b-0": box.relPos === "top",
-                    // "border-l-0": box.relPos === "right",
-                    // "border-r-0": box.relPos === "left",
+                    "border-blue-800":
+                      isEqual(selected, box) && mode === "create",
+                    "border-black": !isEqual(selected, box) || mode === "text",
+                    "hover:border-blue-800":
+                      !isEqual(selected, box) && mode === "create",
+                    "border-black hover:border-red-600": mode === "delete",
                   }
                 )}
                 style={{
@@ -149,8 +145,10 @@ export const Editor = (): ReactElement => {
                   height: ` ${boxSize}px`,
                 }}
                 onClick={() => {
-                  if (textMode) return;
-                  setSelected(box);
+                  if (mode === "text") return;
+                  if (mode === "create") setSelected(box);
+                  if (mode === "delete")
+                    setBoxes(boxes.filter((b) => b.id !== box.id));
                 }}
               >
                 {box?.number && (
@@ -158,8 +156,7 @@ export const Editor = (): ReactElement => {
                     {box.number}
                   </div>
                 )}
-                <input
-                  ref={inputRef}
+                <Input
                   className={cn("outline-none capitalize p-[2px] text-center", {
                     "bg-yellow-300": isEqual(selectedTextMode, box),
                     "bg-transparent": !isEqual(selectedTextMode, box),
@@ -169,38 +166,32 @@ export const Editor = (): ReactElement => {
                     height: ` ${boxSize - 4}px`,
                     caretColor: "transparent",
                   }}
-                  disabled={!textMode}
-                  defaultValue={box.letter}
-                  type="text"
-                  pattern="[a-zA-Z]{1}"
-                  maxLength={1}
+                  disabled={mode !== "text"}
                   onFocus={() => setSelectedTextMode(box)}
                   onBlur={() => setSelectedTextMode(undefined)}
                   onKeyDown={(e) => {
+                    if (mode !== "text") return;
                     const val = (e.target as HTMLInputElement).value;
                     (e.target as HTMLInputElement).value = "";
                     box.setLetter(val);
                   }}
                   onChange={(event) => {
+                    if (mode !== "text") return "";
                     if (!/^[a-zA-Z]$/.test(event.target.value)) {
                       event.target.value = box.letter === "" ? "" : box.letter;
                     }
                     box.setLetter(event.target.value);
+                    return event.target.value;
                   }}
                 />
               </div>
             );
           })}
-          {!textMode &&
+          {mode === "create" &&
             neighbors.map((box, i) => (
               <div
                 key={i}
-                className={cn("border-2 border-black/30 absolute z-5", {
-                  // "border-t-0": box.relPos === "bottom",
-                  // "border-b-0": box.relPos === "top",
-                  // "border-l-0": box.relPos === "right",
-                  // "border-r-0": box.relPos === "left",
-                })}
+                className="border-2 border-black/40 hover:border-blue-800/40 absolute z-5"
                 style={{
                   left: `${box.x}px`,
                   bottom: `${box.y}px`,
@@ -208,7 +199,7 @@ export const Editor = (): ReactElement => {
                   height: ` ${boxSize}px`,
                 }}
                 onClick={() => {
-                  if (textMode) return;
+                  setNumBoxesAdded(numBoxesAdded + 1);
                   boxes.push(box);
                   setBoxes(boxes);
                   const fileted = neighbors.filter(
@@ -220,12 +211,53 @@ export const Editor = (): ReactElement => {
             ))}
         </div>
       </div>
-      <button
-        className="bg-green-500 rounded-md p-2 w-[150px]"
-        onClick={() => setTextMode(!textMode)}
-      >
-        {textMode ? "text mode" : "square mode"}
-      </button>
+      <div className="flex flex-col">
+        <button
+          className={cn("rounded-md p-2 w-[150px]", {
+            "bg-green-500": mode === "create",
+            "bg-green-500/50": mode !== "create",
+          })}
+          onClick={() => setMode("create")}
+        >
+          create
+        </button>
+        <button
+          className={cn("rounded-md p-2 w-[150px]", {
+            "bg-green-500": mode === "text",
+            "bg-green-500/50": mode !== "text",
+          })}
+          onClick={() => {
+            setMode("text");
+            setSelected(undefined);
+          }}
+        >
+          text
+        </button>
+        <button
+          className={cn("rounded-md p-2 w-[150px]", {
+            "bg-green-500": mode === "delete",
+            "bg-green-500/50": mode !== "delete",
+          })}
+          onClick={() => {
+            setMode("delete");
+            setSelected(undefined);
+          }}
+        >
+          delete
+        </button>
+        <button
+          className={cn("rounded-md p-2 w-[150px]", {
+            "bg-green-500": mode === "block",
+            "bg-green-500/50": mode !== "block",
+          })}
+          onClick={() => {
+            setMode("block");
+            setSelected(undefined);
+          }}
+        >
+          block
+        </button>
+      </div>
     </div>
   );
 };
@@ -234,11 +266,12 @@ const getNeighbors = (
   box: Box,
   existing: Box[],
   boxSize: number,
-  boxSpace: number
+  boxSpace: number,
+  numBoxesAdded: number
 ): Box[] => {
   const neighbors = [
     new Box(
-      existing.length + 1,
+      numBoxesAdded + 1,
       box.x - (boxSize + boxSpace),
       box.y,
       box.gridX - 1,
@@ -247,7 +280,7 @@ const getNeighbors = (
       "left"
     ),
     new Box(
-      existing.length + 2,
+      numBoxesAdded + 1,
       box.x + (boxSize + boxSpace),
       box.y,
       box.gridX + 1,
@@ -256,7 +289,7 @@ const getNeighbors = (
       "right"
     ),
     new Box(
-      existing.length + 3,
+      numBoxesAdded + 1,
       box.x,
       box.y - (boxSize + boxSpace),
       box.gridX,
@@ -265,7 +298,7 @@ const getNeighbors = (
       "bottom"
     ),
     new Box(
-      existing.length + 4,
+      numBoxesAdded + 1,
       box.x,
       box.y + (boxSize + boxSpace),
       box.gridX,
@@ -283,7 +316,7 @@ const shouldHaveNumber = (box: Box, existing: Box[]): boolean => {
   let left = [];
   let below = [];
   let right = [];
-  console.log(existing);
+
   for (const existingBox of existing) {
     if (box.x === existingBox.x && box.y < existingBox.y)
       above.push(existingBox.gridY);

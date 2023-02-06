@@ -27,6 +27,10 @@ export class Box {
     this.relPos = relPos;
   }
 
+  setId(number: number) {
+    this.number = number;
+  }
+
   setLetter(letter: string) {
     this.letter = letter;
   }
