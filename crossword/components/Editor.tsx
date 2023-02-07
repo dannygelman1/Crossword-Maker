@@ -124,113 +124,150 @@ export const Editor = (): ReactElement => {
 
   return (
     <div className="flex items-start justify-center h-full w-full bg-red-400 absolute">
-      <div
-        className="mt-5 w-[1000px] h-[500px] border-8 border-green-500 relative overflow-scroll"
-        ref={editorRef}
-      >
+      <div className="flex flex-col">
         <div
-          ref={contentRef}
-          className="absolute origin-center top-0 left-0 w-full h-full"
-          style={{
-            transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-          }}
+          className="mt-5 w-[1000px] h-[500px] border-8 border-green-500 relative overflow-scroll"
+          ref={editorRef}
         >
-          {boxes.map((box) => {
-            return (
-              <div
-                key={box.id}
-                className={cn(
-                  "border-2 absolute flex items-center justify-center z-10 ",
-                  {
-                    "border-blue-800":
-                      isEqual(selected, box) &&
-                      (mode === "create" || mode === "block"),
-                    "border-black": !isEqual(selected, box) || mode === "text",
-                    "hover:border-blue-800":
-                      !isEqual(selected, box) &&
-                      (mode === "create" || mode === "block"),
-                    "border-black hover:border-red-600":
-                      mode === "delete" && boxes.length > 1,
-                    "border-black bg-black": box.isBlock,
-                  }
-                )}
-                style={{
-                  left: `${box.x}px`,
-                  bottom: `${box.y}px`,
-                  width: `${boxSize}px`,
-                  height: ` ${boxSize}px`,
-                }}
-                onClick={() => {
-                  if (mode === "text") return;
-                  if (mode === "create" || mode === "block") setSelected(box);
-                  if (mode === "delete" && boxes.length > 1)
-                    setBoxes(boxes.filter((b) => b.id !== box.id));
-                }}
-              >
-                {box?.number && (
-                  <div className="text-[8px] absolute top-0 left-[1px]">
-                    {box.number}
+          <div
+            ref={contentRef}
+            className="absolute origin-center top-0 left-0 w-full h-full"
+            style={{
+              transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+            }}
+          >
+            {boxes.map((box) => {
+              return (
+                <div
+                  key={box.id}
+                  className={cn(
+                    "border-2 absolute flex items-center justify-center z-10 ",
+                    {
+                      "border-blue-800":
+                        isEqual(selected, box) &&
+                        (mode === "create" || mode === "block"),
+                      "border-black":
+                        !isEqual(selected, box) || mode === "text",
+                      "hover:border-blue-800":
+                        !isEqual(selected, box) &&
+                        (mode === "create" || mode === "block"),
+                      "border-black hover:border-red-600":
+                        mode === "delete" && boxes.length > 1,
+                      "border-black bg-black": box.isBlock,
+                    }
+                  )}
+                  style={{
+                    left: `${box.x}px`,
+                    bottom: `${box.y}px`,
+                    width: `${boxSize}px`,
+                    height: ` ${boxSize}px`,
+                  }}
+                  onClick={() => {
+                    if (mode === "text") return;
+                    if (mode === "create" || mode === "block") setSelected(box);
+                    if (mode === "delete" && boxes.length > 1)
+                      setBoxes(boxes.filter((b) => b.id !== box.id));
+                  }}
+                >
+                  {box?.number && (
+                    <div className="text-[8px] absolute top-0 left-[1px]">
+                      {box.number}
+                    </div>
+                  )}
+                  {!box.isBlock && (
+                    <Input
+                      className={cn(
+                        "outline-none capitalize p-[2px] text-center",
+                        {
+                          "bg-yellow-300": isEqual(selectedTextMode, box),
+                          "bg-transparent": !isEqual(selectedTextMode, box),
+                        }
+                      )}
+                      style={{
+                        width: `${boxSize - 4}px`,
+                        height: ` ${boxSize - 4}px`,
+                        caretColor: "transparent",
+                      }}
+                      disabled={mode !== "text"}
+                      onFocus={() => setSelectedTextMode(box)}
+                      onBlur={() => setSelectedTextMode(undefined)}
+                      onKeyDown={(e) => {
+                        if (mode !== "text") return;
+                        const val = (e.target as HTMLInputElement).value;
+                        (e.target as HTMLInputElement).value = "";
+                        box.setLetter(val);
+                      }}
+                      onChange={(event) => {
+                        if (mode !== "text") return "";
+                        if (!/^[a-zA-Z]$/.test(event.target.value)) {
+                          event.target.value =
+                            box.letter === "" ? "" : box.letter;
+                        }
+                        box.setLetter(event.target.value);
+                        return event.target.value;
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+            {(mode === "create" || mode === "block") &&
+              neighbors.map((box, i) => (
+                <div
+                  key={i}
+                  className="border-2 border-black/40 hover:border-blue-800/40 absolute z-5"
+                  style={{
+                    left: `${box.x}px`,
+                    bottom: `${box.y}px`,
+                    width: `${boxSize}px`,
+                    height: ` ${boxSize}px`,
+                  }}
+                  onClick={() => {
+                    setNumBoxesAdded(numBoxesAdded + 1);
+                    boxes.push(box);
+                    setBoxes(boxes);
+                    const fileted = neighbors.filter(
+                      (n) => n.x !== box.x || n.y !== box.y
+                    );
+                    setNeighbors(fileted);
+                  }}
+                />
+              ))}
+          </div>
+        </div>
+        <div className="flex flex-row space-x-2 h-[200px] w-[1000px] border-8 border-green-500 overflow-auto">
+          <div className="flex flex-col space-y-1 w-1/2">
+            {boxes.map((box) => {
+              if (box.number !== undefined)
+                return (
+                  <div
+                    className="flex flex-row space-x-1 m-0"
+                    key={`${box.id}_2`}
+                  >
+                    <span className="w-5 flex items-center justify-center">
+                      {box.number}
+                    </span>
+                    <input className="bg-white w-full" />
                   </div>
-                )}
-                {!box.isBlock && (
-                  <Input
-                    className={cn(
-                      "outline-none capitalize p-[2px] text-center",
-                      {
-                        "bg-yellow-300": isEqual(selectedTextMode, box),
-                        "bg-transparent": !isEqual(selectedTextMode, box),
-                      }
-                    )}
-                    style={{
-                      width: `${boxSize - 4}px`,
-                      height: ` ${boxSize - 4}px`,
-                      caretColor: "transparent",
-                    }}
-                    disabled={mode !== "text"}
-                    onFocus={() => setSelectedTextMode(box)}
-                    onBlur={() => setSelectedTextMode(undefined)}
-                    onKeyDown={(e) => {
-                      if (mode !== "text") return;
-                      const val = (e.target as HTMLInputElement).value;
-                      (e.target as HTMLInputElement).value = "";
-                      box.setLetter(val);
-                    }}
-                    onChange={(event) => {
-                      if (mode !== "text") return "";
-                      if (!/^[a-zA-Z]$/.test(event.target.value)) {
-                        event.target.value =
-                          box.letter === "" ? "" : box.letter;
-                      }
-                      box.setLetter(event.target.value);
-                      return event.target.value;
-                    }}
-                  />
-                )}
-              </div>
-            );
-          })}
-          {(mode === "create" || mode === "block") &&
-            neighbors.map((box, i) => (
-              <div
-                key={i}
-                className="border-2 border-black/40 hover:border-blue-800/40 absolute z-5"
-                style={{
-                  left: `${box.x}px`,
-                  bottom: `${box.y}px`,
-                  width: `${boxSize}px`,
-                  height: ` ${boxSize}px`,
-                }}
-                onClick={() => {
-                  setNumBoxesAdded(numBoxesAdded + 1);
-                  boxes.push(box);
-                  setBoxes(boxes);
-                  const fileted = neighbors.filter(
-                    (n) => n.x !== box.x || n.y !== box.y
-                  );
-                  setNeighbors(fileted);
-                }}
-              />
-            ))}
+                );
+            })}
+          </div>
+          <div className="flex flex-col space-y-1 w-1/2">
+            {boxes.map((box) => {
+              if (box.number !== undefined)
+                return (
+                  <div
+                    className="flex flex-row space-x-1 m-0"
+                    key={`${box.id}_2`}
+                  >
+                    <span className="w-5 flex items-center justify-center">
+                      {box.number}
+                    </span>
+                    <input className="bg-white w-full" />
+                  </div>
+                );
+            })}
+          </div>
         </div>
       </div>
       <div className="flex flex-col">
