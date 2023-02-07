@@ -7,6 +7,7 @@ export class Box {
   gridY: number;
   letter: string;
   relPos: RelPos;
+  isBlock: boolean;
   number?: number;
 
   constructor(
@@ -16,6 +17,7 @@ export class Box {
     gridX: number,
     gridY: number,
     letter: string,
+    isBlock: boolean,
     relPos: RelPos
   ) {
     this.id = id;
@@ -25,9 +27,14 @@ export class Box {
     this.gridY = gridY;
     this.letter = letter;
     this.relPos = relPos;
+    this.isBlock = isBlock;
   }
 
   setId(number: number) {
+    this.number = number;
+  }
+
+  setIsBlock(number: number) {
     this.number = number;
   }
 
