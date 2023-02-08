@@ -1,4 +1,4 @@
-import { Box } from "models/Box";
+import { Box, Clues } from "models/Box";
 import {
   ReactElement,
   useEffect,
@@ -56,10 +56,15 @@ export const Editor = (): ReactElement => {
     let i = 1;
     let newBoxes: Box[] = [];
     for (const sortedBox of sortedBoxes) {
-      if (shouldHaveNumber(sortedBox, boxes)) {
+      const clue = shouldHaveNumber(sortedBox, boxes);
+      if (["both", "vertical", "horizontal"].includes(clue)) {
         sortedBox?.setNumber(i);
+        sortedBox.setClues(clue);
         i += 1;
-      } else sortedBox?.unsetNumber();
+      } else {
+        sortedBox?.unsetNumber();
+        sortedBox.setClues("none");
+      }
       newBoxes.push(sortedBox);
       setBoxes(newBoxes);
     }
@@ -123,10 +128,10 @@ export const Editor = (): ReactElement => {
   }, [scale, position, isDragging, startCoordinates]);
 
   return (
-    <div className="flex items-start justify-center h-full w-full bg-red-400 absolute">
-      <div className="flex flex-col">
+    <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-red-400 absolute">
+      <div className="flex flex-col space-y-2">
         <div
-          className="mt-5 w-[1000px] h-[500px] border-8 border-green-500 relative overflow-scroll"
+          className="w-[1000px] h-[500px] border-8 border-green-500 relative overflow-scroll"
           ref={editorRef}
         >
           <div
@@ -235,10 +240,10 @@ export const Editor = (): ReactElement => {
               ))}
           </div>
         </div>
-        <div className="flex flex-row space-x-2 h-[200px] w-[1000px] border-8 border-green-500 overflow-auto">
+        <div className="flex flex-row space-x-2 h-[210px] w-[1000px] border-8 border-green-500 overflow-auto">
           <div className="flex flex-col space-y-1 w-1/2">
             {boxes.map((box) => {
-              if (box.number !== undefined)
+              if (box.clues == "vertical" || box.clues == "both")
                 return (
                   <div
                     className="flex flex-row space-x-1 m-0"
@@ -254,7 +259,7 @@ export const Editor = (): ReactElement => {
           </div>
           <div className="flex flex-col space-y-1 w-1/2">
             {boxes.map((box) => {
-              if (box.number !== undefined)
+              if (box.clues == "horizontal" || box.clues == "both")
                 return (
                   <div
                     className="flex flex-row space-x-1 m-0"
@@ -270,7 +275,7 @@ export const Editor = (): ReactElement => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col space-y-1">
         <button
           className={cn("rounded-md p-2 w-[150px]", {
             "bg-green-500": mode === "create",
@@ -374,12 +379,12 @@ const getNeighbors = (
   return neighbors.filter((n) => !existingString.includes(JSON.stringify(n)));
 };
 
-const shouldHaveNumber = (box: Box, existing: Box[]): boolean => {
+const shouldHaveNumber = (box: Box, existing: Box[]): Clues => {
   let above = [];
   let left = [];
   let below = [];
   let right = [];
-  if (box.isBlock) return false;
+  if (box.isBlock) return "none";
   for (const existingBox of existing) {
     if (existingBox.isBlock) continue;
     if (box.x === existingBox.x && box.y < existingBox.y)
@@ -391,9 +396,12 @@ const shouldHaveNumber = (box: Box, existing: Box[]): boolean => {
     if (box.y === existingBox.y && box.x < existingBox.x)
       right.push(existingBox.gridX);
   }
-
-  return (
-    (!above.includes(box.gridY + 1) && below.includes(box.gridY - 1)) ||
-    (!left.includes(box.gridX - 1) && right.includes(box.gridX + 1))
-  );
+  const verticalClue =
+    !above.includes(box.gridY + 1) && below.includes(box.gridY - 1);
+  const horizontalClue =
+    !left.includes(box.gridX - 1) && right.includes(box.gridX + 1);
+  if (verticalClue && !horizontalClue) return "vertical";
+  else if (!verticalClue && horizontalClue) return "horizontal";
+  else if (verticalClue && horizontalClue) return "both";
+  else return "none";
 };

@@ -1,4 +1,5 @@
 type RelPos = "top" | "bottom" | "right" | "left" | "center";
+export type Clues = "vertical" | "horizontal" | "both" | "none";
 export class Box {
   id: number;
   x: number;
@@ -8,6 +9,7 @@ export class Box {
   letter: string;
   relPos: RelPos;
   isBlock: boolean;
+  clues: Clues = "none";
   number?: number;
 
   constructor(
@@ -48,5 +50,9 @@ export class Box {
 
   unsetNumber() {
     this.number = undefined;
+  }
+
+  setClues(clues: Clues) {
+    this.clues = clues;
   }
 }
