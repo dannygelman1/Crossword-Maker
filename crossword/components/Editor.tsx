@@ -242,8 +242,9 @@ export const Editor = (): ReactElement => {
         </div>
         <div className="flex flex-row space-x-2 h-[210px] w-[1000px] border-8 border-green-500 overflow-auto">
           <div className="flex flex-col space-y-1 w-1/2">
+            <span className="flex p-1 items-center justify-center">Across</span>
             {boxes.map((box) => {
-              if (box.clues == "vertical" || box.clues == "both")
+              if (box.clues == "horizontal" || box.clues == "both")
                 return (
                   <div
                     className="flex flex-row space-x-1 m-0"
@@ -258,8 +259,9 @@ export const Editor = (): ReactElement => {
             })}
           </div>
           <div className="flex flex-col space-y-1 w-1/2">
+            <span className="flex p-1 items-center justify-center">Down</span>
             {boxes.map((box) => {
-              if (box.clues == "horizontal" || box.clues == "both")
+              if (box.clues == "vertical" || box.clues == "both")
                 return (
                   <div
                     className="flex flex-row space-x-1 m-0"
