@@ -12,24 +12,4 @@ export class GamesResolver {
   createGame(@Args('createGameInput') createGameInput: CreateGameInput) {
     return this.gamesService.create(createGameInput);
   }
-
-  @Query(() => [Game], { name: 'games' })
-  findAll() {
-    return this.gamesService.findAll();
-  }
-
-  @Query(() => Game, { name: 'game' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.gamesService.findOne(id);
-  }
-
-  @Mutation(() => Game)
-  updateGame(@Args('updateGameInput') updateGameInput: UpdateGameInput) {
-    return this.gamesService.update(updateGameInput.id, updateGameInput);
-  }
-
-  @Mutation(() => Game)
-  removeGame(@Args('id', { type: () => Int }) id: number) {
-    return this.gamesService.remove(id);
-  }
 }
