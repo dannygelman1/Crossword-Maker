@@ -18,4 +18,8 @@ export class GamesService {
     game = await this.gamesRepository.save(game);
     return game;
   }
+
+  async findOne(slug: string): Promise<Game> {
+    return this.gamesRepository.findOneBy({ slug });
+  }
 }
