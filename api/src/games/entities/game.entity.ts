@@ -1,5 +1,6 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { ID } from '@nestjs/graphql/dist/scalars';
+import { Entity } from 'typeorm/decorator/entity/Entity';
 import { Column } from 'typeorm/decorator/columns/Column';
 import { CreateDateColumn } from 'typeorm/decorator/columns/CreateDateColumn';
 
@@ -7,6 +8,7 @@ import { PrimaryGeneratedColumn } from 'typeorm/decorator/columns/PrimaryGenerat
 import { UpdateDateColumn } from 'typeorm/decorator/columns/UpdateDateColumn';
 
 @ObjectType()
+@Entity('games')
 export class Game {
   @Field(() => ID, { description: 'ID of the game.' })
   @PrimaryGeneratedColumn('uuid')
