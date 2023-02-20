@@ -15,7 +15,10 @@ export class GamesResolver {
   }
 
   @Query(() => Game)
-  findGame(slug: string): Promise<Game> {
+  findGame(
+    @Args('slug', { type: () => String, description: 'slug of the game.' })
+    slug: string,
+  ): Promise<Game> {
     return this.gamesService.findOne(slug);
   }
 }
