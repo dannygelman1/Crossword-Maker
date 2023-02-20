@@ -64,3 +64,73 @@ export interface createGameVariables {
     slug: string;
   };
 }
+
+export const CREATE_BOX = gql`
+  mutation createBox($createBoxInput: CreateBoxInput!) {
+    createBox(createBoxInput: $createBoxInput) {
+      id
+      game_id
+      x
+      y
+      isblock
+    }
+  }
+`;
+
+export interface createBoxData {
+  createBox: {
+    id: string;
+    game_id: string;
+    x: number;
+    y: number;
+    isblock: boolean;
+  };
+}
+
+export interface createBoxVariables {
+  createBoxInput: {
+    game_id: string;
+    x: number;
+    y: number;
+    isblock: boolean;
+  };
+}
+
+export const UPDATE_BOX = gql`
+  mutation updateBox($updateBoxInput: UpdateBoxInput!) {
+    updateBox(updateBoxInput: $updateBoxInput) {
+      id
+      letter
+    }
+  }
+`;
+
+export interface updateBoxData {
+  updateBox: {
+    id: string;
+    letter?: string;
+  };
+}
+
+export interface updateBoxVariables {
+  updateBoxInput: {
+    id: string;
+    letter: string | null;
+  };
+}
+
+export const DELETE_BOX = gql`
+  mutation deleteBox($id: String!) {
+    deleteBox(id: $id)
+  }
+`;
+
+export interface deleteBoxData {
+  deleteBox: {
+    id: string;
+  };
+}
+
+export interface deleteBoxVariables {
+  id: string;
+}

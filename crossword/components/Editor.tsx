@@ -10,13 +10,22 @@ import { isEqual } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
 import {
+  createBoxData,
+  createBoxVariables,
   createGameData,
   createGameVariables,
+  CREATE_BOX,
   CREATE_GAME,
+  deleteBoxData,
+  deleteBoxVariables,
+  DELETE_BOX,
   getGameData,
   getGameVariables,
   GET_GAME,
   GQLClient,
+  updateBoxData,
+  updateBoxVariables,
+  UPDATE_BOX,
 } from "lib/gqlClient";
 export const Editor = (): ReactElement => {
   const firstBox = new Box(1, 500, 250, 0, 0, "", false, "center");
@@ -159,6 +168,47 @@ export const Editor = (): ReactElement => {
     return gameData;
   };
 
+  const createBox = async (
+    x: number,
+    y: number,
+    isblock: boolean
+  ): Promise<createBoxData> => {
+    const boxData = await gql.request<createBoxData, createBoxVariables>(
+      CREATE_BOX,
+      {
+        createBoxInput: {
+          game_id: "15135eb5-4e47-42ad-bb06-a86e3f35ea34",
+          x,
+          y,
+          isblock,
+        },
+      }
+    );
+    return boxData;
+  };
+
+  const updateBox = async (
+    id: string,
+    letter: string | null
+  ): Promise<updateBoxData> => {
+    const boxData = await gql.request<updateBoxData, updateBoxVariables>(
+      UPDATE_BOX,
+      {
+        updateBoxInput: {
+          id,
+          letter,
+        },
+      }
+    );
+    return boxData;
+  };
+
+  const deleteBox = async (id: string): Promise<void> => {
+    await gql.request<deleteBoxData, deleteBoxVariables>(DELETE_BOX, {
+      id,
+    });
+  };
+
   return (
     <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-red-400 absolute">
       <div className="flex flex-col space-y-2">
@@ -202,8 +252,10 @@ export const Editor = (): ReactElement => {
                   onClick={() => {
                     if (mode === "text") return;
                     if (mode === "create" || mode === "block") setSelected(box);
-                    if (mode === "delete" && boxes.length > 1)
+                    if (mode === "delete" && boxes.length > 1) {
                       setBoxes(boxes.filter((b) => b.id !== box.id));
+                      if (box.dataBaseId) deleteBox(box.dataBaseId);
+                    }
                   }}
                 >
                   {box?.number && (
@@ -241,6 +293,13 @@ export const Editor = (): ReactElement => {
                             box.letter === "" ? "" : box.letter;
                         }
                         box.setLetter(event.target.value);
+                        if (box.dataBaseId)
+                          updateBox(
+                            box.dataBaseId,
+                            event.target.value === ""
+                              ? null
+                              : event.target.value
+                          );
                         return event.target.value;
                       }}
                     />
@@ -259,7 +318,7 @@ export const Editor = (): ReactElement => {
                     width: `${boxSize}px`,
                     height: ` ${boxSize}px`,
                   }}
-                  onClick={() => {
+                  onClick={async () => {
                     setNumBoxesAdded(numBoxesAdded + 1);
                     boxes.push(box);
                     setBoxes(boxes);
@@ -267,6 +326,13 @@ export const Editor = (): ReactElement => {
                       (n) => n.x !== box.x || n.y !== box.y
                     );
                     setNeighbors(fileted);
+
+                    const boxData = await createBox(
+                      box.gridX,
+                      box.gridY,
+                      box.isBlock
+                    );
+                    box.setDatabaseId(boxData.createBox.id);
                   }}
                 />
               ))}

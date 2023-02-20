@@ -2,6 +2,7 @@ type RelPos = "top" | "bottom" | "right" | "left" | "center";
 export type Clues = "vertical" | "horizontal" | "both" | "none";
 export class Box {
   id: number;
+  dataBaseId?: string;
   x: number;
   y: number;
   gridX: number;
@@ -32,8 +33,8 @@ export class Box {
     this.isBlock = isBlock;
   }
 
-  setId(number: number) {
-    this.number = number;
+  setDatabaseId(dataBaseId: string) {
+    this.dataBaseId = dataBaseId;
   }
 
   setIsBlock(number: number) {
