@@ -15,6 +15,7 @@ export class BoxesService {
   async create(createBoxInput: CreateBoxInput): Promise<Box> {
     let box = new Box();
 
+    box.game_id = createBoxInput.game_id;
     box.x = createBoxInput.x;
     box.y = createBoxInput.y;
     box.isblock = createBoxInput.isblock;
