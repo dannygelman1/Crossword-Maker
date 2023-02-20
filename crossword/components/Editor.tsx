@@ -13,6 +13,9 @@ import {
   createGameData,
   createGameVariables,
   CREATE_GAME,
+  getGameData,
+  getGameVariables,
+  GET_GAME,
   GQLClient,
 } from "lib/gqlClient";
 export const Editor = (): ReactElement => {
@@ -141,6 +144,16 @@ export const Editor = (): ReactElement => {
         createGameInput: {
           slug,
         },
+      }
+    );
+    return gameData;
+  };
+
+  const getGame = async (slug: string): Promise<getGameData> => {
+    const gameData = await gql.request<getGameData, getGameVariables>(
+      GET_GAME,
+      {
+        slug,
       }
     );
     return gameData;
@@ -351,6 +364,18 @@ export const Editor = (): ReactElement => {
           }}
         >
           create
+        </button>
+        <button
+          className={cn("rounded-md p-2 w-[150px]", {
+            "bg-green-500": mode === "block",
+            "bg-green-500/50": mode !== "block",
+          })}
+          onClick={async () => {
+            const game = await getGame("hi");
+            console.log(game);
+          }}
+        >
+          get
         </button>
       </div>
     </div>

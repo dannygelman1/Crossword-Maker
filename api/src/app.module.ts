@@ -13,6 +13,7 @@ import { GamesModule } from './games/games.module';
       autoSchemaFile: true,
       debug: true,
       playground: true,
+      cache: 'bounded',
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
