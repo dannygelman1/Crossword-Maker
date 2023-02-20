@@ -9,6 +9,12 @@ import {
 import { isEqual } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
+import {
+  createGameData,
+  createGameVariables,
+  CREATE_GAME,
+  GQLClient,
+} from "lib/gqlClient";
 export const Editor = (): ReactElement => {
   const firstBox = new Box(1, 500, 250, 0, 0, "", false, "center");
   const [selected, setSelected] = useState<Box | undefined>(firstBox);
@@ -126,6 +132,19 @@ export const Editor = (): ReactElement => {
       }
     };
   }, [scale, position, isDragging, startCoordinates]);
+
+  const gql = new GQLClient();
+  const createGame = async (slug: string): Promise<createGameData> => {
+    const gameData = await gql.request<createGameData, createGameVariables>(
+      CREATE_GAME,
+      {
+        createGameInput: {
+          slug,
+        },
+      }
+    );
+    return gameData;
+  };
 
   return (
     <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-red-400 absolute">
@@ -321,6 +340,17 @@ export const Editor = (): ReactElement => {
           }}
         >
           block
+        </button>
+        <button
+          className={cn("rounded-md p-2 w-[150px]", {
+            "bg-green-500": mode === "block",
+            "bg-green-500/50": mode !== "block",
+          })}
+          onClick={async () => {
+            await createGame("hi");
+          }}
+        >
+          create
         </button>
       </div>
     </div>
