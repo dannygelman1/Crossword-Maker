@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { BoxesService } from './boxes.service';
 import { Box } from './entities/box.entity';
 import { CreateBoxInput } from './dto/create-box.input';
@@ -17,15 +17,13 @@ export class BoxesResolver {
 
   @Mutation(() => Box)
   updateBox(
-    @Args('id', { type: () => String }) id: string,
-    @Args('letter', { type: () => String, nullable: true })
-    letter: string | null,
+    @Args('updateBoxInput') updateBoxInput: UpdateBoxInput,
   ): Promise<Box> {
-    return this.boxesService.update(id, letter);
+    return this.boxesService.update(updateBoxInput.id, updateBoxInput.letter);
   }
 
-  @Mutation(() => Box)
-  deleteBox(@Args('id', { type: () => String }) id: string): Promise<void> {
+  @Mutation(() => ID)
+  deleteBox(@Args('id', { type: () => String }) id: string): Promise<string> {
     return this.boxesService.delete(id);
   }
 

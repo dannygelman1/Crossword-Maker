@@ -28,8 +28,9 @@ export class BoxesService {
     return this.boxesRepository.findOneBy({ id });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<string> {
     await this.boxesRepository.delete({ id });
+    return id;
   }
 
   async findOne(id: string): Promise<Box> {
