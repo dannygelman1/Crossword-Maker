@@ -1,30 +1,25 @@
-import {
-  ReactElement,
-  useState,
-  ChangeEvent,
-  KeyboardEvent,
-  CSSProperties,
-  RefObject,
-} from "react";
+import { updateBoxData } from "lib/gqlClient";
+import { Box } from "models/Box";
+import { ReactElement, useState, ChangeEvent, CSSProperties } from "react";
 
 interface InputProps {
-  onChange: (event: ChangeEvent<HTMLInputElement>) => string;
   className: string;
   style: CSSProperties;
   disabled: boolean;
   onFocus: () => void;
   onBlur: () => void;
-  onKeyDown: (event: KeyboardEvent) => void;
+  box: Box;
+  updateBox: (letter: string | null) => void;
 }
 
 export const Input = ({
-  onChange,
   className,
   style,
   disabled,
   onFocus,
   onBlur,
-  onKeyDown,
+  box,
+  updateBox,
 }: InputProps): ReactElement => {
   const [value, setValue] = useState<string>("");
   return (
@@ -38,10 +33,21 @@ export const Input = ({
       maxLength={1}
       onFocus={onFocus}
       onBlur={onBlur}
-      onKeyDown={(e) => onKeyDown(e)}
+      onKeyDown={(e) => {
+        if (e.key === "Backspace") {
+          setValue("");
+          updateBox(null);
+        }
+        (e.target as HTMLInputElement).value = "";
+      }}
       onChange={(event) => {
-        const val = onChange(event);
-        setValue(val);
+        let letter = event.target.value;
+        if (!/^[a-zA-Z]$/.test(letter)) {
+          letter = box.letter === "" ? "" : box.letter;
+        }
+        box.setLetter(letter);
+        setValue(letter);
+        updateBox(letter === "" ? null : letter);
       }}
     />
   );

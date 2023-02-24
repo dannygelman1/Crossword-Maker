@@ -277,30 +277,12 @@ export const Editor = (): ReactElement => {
                         height: ` ${boxSize - 4}px`,
                         caretColor: "transparent",
                       }}
+                      box={box}
                       disabled={mode !== "text"}
                       onFocus={() => setSelectedTextMode(box)}
                       onBlur={() => setSelectedTextMode(undefined)}
-                      onKeyDown={(e) => {
-                        if (mode !== "text") return;
-                        const val = (e.target as HTMLInputElement).value;
-                        (e.target as HTMLInputElement).value = "";
-                        box.setLetter(val);
-                      }}
-                      onChange={(event) => {
-                        if (mode !== "text") return "";
-                        if (!/^[a-zA-Z]$/.test(event.target.value)) {
-                          event.target.value =
-                            box.letter === "" ? "" : box.letter;
-                        }
-                        box.setLetter(event.target.value);
-                        if (box.dataBaseId)
-                          updateBox(
-                            box.dataBaseId,
-                            event.target.value === ""
-                              ? null
-                              : event.target.value
-                          );
-                        return event.target.value;
+                      updateBox={(letter: string | null) => {
+                        if (box.dataBaseId) updateBox(box.dataBaseId, letter);
                       }}
                     />
                   )}
