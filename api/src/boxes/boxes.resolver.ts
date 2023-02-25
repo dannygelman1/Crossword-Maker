@@ -32,7 +32,7 @@ export class BoxesResolver {
     return this.boxesService.findOne(id);
   }
 
-  @Query(() => Box, { name: 'boxes' })
+  @Query(() => [Box], { name: 'boxes' })
   find(@Args('id', { type: () => String }) id: string): Promise<Box[]> {
     return this.boxesService.findAll(id);
   }
