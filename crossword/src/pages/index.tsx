@@ -1,8 +1,5 @@
 import Head from "next/head";
-import { Inter } from "@next/font/google";
-import { Editor } from "components/Editor";
-
-const inter = Inter({ subsets: ["latin"] });
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -13,7 +10,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Editor />
+      <div className="bg-white w-full h-full absolute flex">
+        <Link href="/game/15135eb5-4e47-42ad-bb06-a86e3f35ea34">
+          <div className="bg-green-500 p-2">Click here to start game</div>
+        </Link>
+      </div>
     </>
   );
 }

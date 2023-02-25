@@ -1,11 +1,5 @@
-import { Box, Clues } from "models/Box";
-import {
-  ReactElement,
-  useEffect,
-  useState,
-  KeyboardEvent,
-  useRef,
-} from "react";
+import { Box, Clues } from "@/models/Box";
+import { ReactElement, useEffect, useState, useRef } from "react";
 import { isEqual } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
@@ -26,7 +20,7 @@ import {
   updateBoxData,
   updateBoxVariables,
   UPDATE_BOX,
-} from "lib/gqlClient";
+} from "@/lib/gqlClient";
 export const Editor = (): ReactElement => {
   const firstBox = new Box(1, 500, 250, 0, 0, "", false, "center");
   const [selected, setSelected] = useState<Box | undefined>(firstBox);

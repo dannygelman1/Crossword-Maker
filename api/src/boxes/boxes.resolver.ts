@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { BoxesService } from './boxes.service';
 import { Box } from './entities/box.entity';
 import { CreateBoxInput } from './dto/create-box.input';
@@ -30,5 +30,10 @@ export class BoxesResolver {
   @Query(() => Box, { name: 'box' })
   findOne(@Args('id', { type: () => String }) id: string): Promise<Box> {
     return this.boxesService.findOne(id);
+  }
+
+  @Query(() => Box, { name: 'boxes' })
+  find(@Args('id', { type: () => String }) id: string): Promise<Box[]> {
+    return this.boxesService.findAll(id);
   }
 }

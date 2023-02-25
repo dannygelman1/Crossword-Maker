@@ -1,5 +1,5 @@
-import { updateBoxData } from "lib/gqlClient";
-import { Box } from "models/Box";
+import { updateBoxData } from "@/lib/gqlClient";
+import { Box } from "@/models/Box";
 import { ReactElement, useState, ChangeEvent, CSSProperties } from "react";
 
 interface InputProps {

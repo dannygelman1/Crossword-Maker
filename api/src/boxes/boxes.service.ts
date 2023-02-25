@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { Repository } from 'typeorm/repository/Repository';
 import { CreateBoxInput } from './dto/create-box.input';
-import { UpdateBoxInput } from './dto/update-box.input';
 import { Box } from './entities/box.entity';
 
 @Injectable()
@@ -35,5 +34,9 @@ export class BoxesService {
 
   async findOne(id: string): Promise<Box> {
     return this.boxesRepository.findOneBy({ id });
+  }
+
+  async findAll(game_id: string): Promise<Box[]> {
+    return this.boxesRepository.find({ where: { game_id } });
   }
 }
