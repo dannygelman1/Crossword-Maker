@@ -37,7 +37,7 @@ export class BoxesService {
   }
 
   async findAll(game_id: string): Promise<Box[]> {
-    const boxes = this.boxesRepository.find({ where: { game_id } });
+    const boxes = await this.boxesRepository.find({ where: { game_id } });
     console.log(boxes);
     return boxes;
   }
