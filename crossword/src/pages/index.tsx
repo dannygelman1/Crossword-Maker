@@ -11,7 +11,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="bg-white w-full h-full absolute flex">
-        <Link href="/game/15135eb5-4e47-42ad-bb06-a86e3f35ea34">
+        <Link href="/game/hi">
           <div className="bg-green-500 p-2">Click here to start game</div>
         </Link>
       </div>

@@ -1,27 +1,23 @@
-type RelPos = "top" | "bottom" | "right" | "left" | "center";
 export type Clues = "vertical" | "horizontal" | "both" | "none";
 export class Box {
-  id: number;
-  dataBaseId?: string;
+  id: string;
   x: number;
   y: number;
   gridX: number;
   gridY: number;
   letter: string;
-  relPos: RelPos;
   isBlock: boolean;
   clues: Clues = "none";
   number?: number;
 
   constructor(
-    id: number,
+    id: string,
     x: number,
     y: number,
     gridX: number,
     gridY: number,
     letter: string,
-    isBlock: boolean,
-    relPos: RelPos
+    isBlock: boolean
   ) {
     this.id = id;
     this.x = x;
@@ -29,14 +25,13 @@ export class Box {
     this.gridX = gridX;
     this.gridY = gridY;
     this.letter = letter;
-    this.relPos = relPos;
     this.isBlock = isBlock;
   }
 
-  setDatabaseId(dataBaseId: string) {
-    this.dataBaseId = dataBaseId;
+  // setId()
+  setId(id: string) {
+    this.id = id;
   }
-
   setIsBlock(number: number) {
     this.number = number;
   }

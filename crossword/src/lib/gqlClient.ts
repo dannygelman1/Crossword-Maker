@@ -43,6 +43,32 @@ export interface getGameVariables {
   slug: string;
 }
 
+export const GET_BOXES = gql`
+  query boxes($id: String!) {
+    boxes(id: $id) {
+      id
+      letter
+      x
+      y
+      isblock
+    }
+  }
+`;
+
+export interface getBoxesData {
+  boxes: {
+    id: string;
+    letter: string | null;
+    x: number;
+    y: number;
+    isblock: boolean;
+  }[];
+}
+
+export interface getBoxesVariables {
+  id: string;
+}
+
 export const CREATE_GAME = gql`
   mutation createGame($createGameInput: CreateGameInput!) {
     createGame(createGameInput: $createGameInput) {

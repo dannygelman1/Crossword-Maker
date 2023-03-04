@@ -1,6 +1,6 @@
 import { Box, Clues } from "@/models/Box";
 import { ReactElement, useEffect, useState, useRef } from "react";
-import { isEqual } from "lodash";
+import { isEqual, uniqueId } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
 import {
@@ -13,18 +13,27 @@ import {
   deleteBoxData,
   deleteBoxVariables,
   DELETE_BOX,
+  getBoxesData,
+  getBoxesVariables,
   getGameData,
   getGameVariables,
+  GET_BOXES,
   GET_GAME,
   GQLClient,
   updateBoxData,
   updateBoxVariables,
   UPDATE_BOX,
 } from "@/lib/gqlClient";
-export const Editor = (): ReactElement => {
-  const firstBox = new Box(1, 500, 250, 0, 0, "", false, "center");
+import { useRouter } from "next/router";
+import { randomUUID } from "node:crypto";
+
+interface EditorProps {
+  gameId: string;
+}
+export const Editor = ({ gameId }: EditorProps): ReactElement => {
+  const firstBox = new Box(uniqueId(), 500, 250, 0, 0, "", false);
   const [selected, setSelected] = useState<Box | undefined>(firstBox);
-  const [numBoxesAdded, setNumBoxesAdded] = useState<number>(1);
+  // const [numBoxesAdded, setNumBoxesAdded] = useState<number>(1);
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
@@ -45,19 +54,12 @@ export const Editor = (): ReactElement => {
   useEffect(() => {
     if (selected) {
       setNeighbors(
-        getNeighbors(
-          selected,
-          boxes,
-          boxSize,
-          boxSpace,
-          numBoxesAdded,
-          mode === "block"
-        )
+        getNeighbors(selected, boxes, boxSize, boxSpace, mode === "block")
       );
     } else {
       setNeighbors([]);
     }
-  }, [selected, mode, numBoxesAdded]);
+  }, [selected, mode]);
 
   useEffect(() => {
     const copy = [...boxes];
@@ -68,7 +70,7 @@ export const Editor = (): ReactElement => {
     let i = 1;
     let newBoxes: Box[] = [];
     for (const sortedBox of sortedBoxes) {
-      const clue = shouldHaveNumber(sortedBox, boxes);
+      const clue = shouldHaveNumber(sortedBox, copy);
       if (["both", "vertical", "horizontal"].includes(clue)) {
         sortedBox?.setNumber(i);
         sortedBox.setClues(clue);
@@ -78,9 +80,54 @@ export const Editor = (): ReactElement => {
         sortedBox.setClues("none");
       }
       newBoxes.push(sortedBox);
-      setBoxes(newBoxes);
     }
+    setBoxes(newBoxes);
+    console.log("here");
   }, [boxes.length]);
+
+  useEffect(() => {
+    console.log("slug 1", gameId);
+    loadBoxes();
+  }, []);
+
+  const loadBoxes = async () => {
+    console.log("slug 2", gameId);
+    const boxesFromDB = await getBoxes(gameId);
+    console.log("slug 2", boxesFromDB);
+    const boxModels = boxesFromDB.boxes.map(
+      (box) =>
+        new Box(
+          box.id,
+          500 + box.x * (boxSize + boxSpace),
+          250 + box.y * (boxSize + boxSpace),
+          box.x,
+          box.y,
+          box.letter ?? "",
+          box.isblock
+        )
+    );
+
+    const copy = [...boxModels];
+    const sortedBoxes = copy.sort((a, b) => {
+      if (a.y !== b.y) return b.y - a.y;
+      return a.x - b.x;
+    });
+    let i = 1;
+    let newBoxes: Box[] = [];
+    for (const sortedBox of sortedBoxes) {
+      const clue = shouldHaveNumber(sortedBox, copy);
+      if (["both", "vertical", "horizontal"].includes(clue)) {
+        sortedBox?.setNumber(i);
+        sortedBox.setClues(clue);
+        i += 1;
+      } else {
+        sortedBox?.unsetNumber();
+        sortedBox.setClues("none");
+      }
+      newBoxes.push(sortedBox);
+    }
+    setBoxes(newBoxes);
+  };
 
   useEffect(() => {
     const preventDefault = (event: MouseEvent) => {
@@ -162,6 +209,16 @@ export const Editor = (): ReactElement => {
     return gameData;
   };
 
+  const getBoxes = async (id: string): Promise<getBoxesData> => {
+    const boxesData = await gql.request<getBoxesData, getBoxesVariables>(
+      GET_BOXES,
+      {
+        id,
+      }
+    );
+    return boxesData;
+  };
+
   const createBox = async (
     x: number,
     y: number,
@@ -171,13 +228,14 @@ export const Editor = (): ReactElement => {
       CREATE_BOX,
       {
         createBoxInput: {
-          game_id: "15135eb5-4e47-42ad-bb06-a86e3f35ea34",
+          game_id: gameId,
           x,
           y,
           isblock,
         },
       }
     );
+    console.log("create", boxData);
     return boxData;
   };
 
@@ -248,7 +306,7 @@ export const Editor = (): ReactElement => {
                     if (mode === "create" || mode === "block") setSelected(box);
                     if (mode === "delete" && boxes.length > 1) {
                       setBoxes(boxes.filter((b) => b.id !== box.id));
-                      if (box.dataBaseId) deleteBox(box.dataBaseId);
+                      deleteBox(box.id);
                     }
                   }}
                 >
@@ -276,7 +334,7 @@ export const Editor = (): ReactElement => {
                       onFocus={() => setSelectedTextMode(box)}
                       onBlur={() => setSelectedTextMode(undefined)}
                       updateBox={(letter: string | null) => {
-                        if (box.dataBaseId) updateBox(box.dataBaseId, letter);
+                        updateBox(box.id, letter);
                       }}
                     />
                   )}
@@ -295,20 +353,18 @@ export const Editor = (): ReactElement => {
                     height: ` ${boxSize}px`,
                   }}
                   onClick={async () => {
-                    setNumBoxesAdded(numBoxesAdded + 1);
+                    const boxData = await createBox(
+                      box.gridX,
+                      box.gridY,
+                      box.isBlock
+                    );
+                    box.setId(boxData.createBox.id);
                     boxes.push(box);
                     setBoxes(boxes);
                     const fileted = neighbors.filter(
                       (n) => n.x !== box.x || n.y !== box.y
                     );
                     setNeighbors(fileted);
-
-                    const boxData = await createBox(
-                      box.gridX,
-                      box.gridY,
-                      box.isBlock
-                    );
-                    box.setDatabaseId(boxData.createBox.id);
                   }}
                 />
               ))}
@@ -397,27 +453,28 @@ export const Editor = (): ReactElement => {
           block
         </button>
         <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "block",
-            "bg-green-500/50": mode !== "block",
-          })}
+          className={cn("rounded-md p-2 w-[150px]")}
           onClick={async () => {
             await createGame("hi");
           }}
         >
-          create
+          create game mutation
         </button>
         <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "block",
-            "bg-green-500/50": mode !== "block",
-          })}
+          className={cn("rounded-md p-2 w-[150px]")}
           onClick={async () => {
             const game = await getGame("hi");
-            console.log(game);
           }}
         >
-          get
+          get game query
+        </button>
+        <button
+          className={cn("rounded-md p-2 w-[150px]")}
+          onClick={async () => {
+            const boxes = await getBoxes(gameId);
+          }}
+        >
+          get boxes query
         </button>
       </div>
     </div>
@@ -429,49 +486,44 @@ const getNeighbors = (
   existing: Box[],
   boxSize: number,
   boxSpace: number,
-  numBoxesAdded: number,
   isBlock: boolean
 ): Box[] => {
   const neighbors = [
     new Box(
-      numBoxesAdded + 1,
+      uniqueId(),
       box.x - (boxSize + boxSpace),
       box.y,
       box.gridX - 1,
       box.gridY,
       "",
-      isBlock,
-      "left"
+      isBlock
     ),
     new Box(
-      numBoxesAdded + 1,
+      uniqueId(),
       box.x + (boxSize + boxSpace),
       box.y,
       box.gridX + 1,
       box.gridY,
       "",
-      isBlock,
-      "right"
+      isBlock
     ),
     new Box(
-      numBoxesAdded + 1,
+      uniqueId(),
       box.x,
       box.y - (boxSize + boxSpace),
       box.gridX,
       box.gridY - 1,
       "",
-      isBlock,
-      "bottom"
+      isBlock
     ),
     new Box(
-      numBoxesAdded + 1,
+      uniqueId(),
       box.x,
       box.y + (boxSize + boxSpace),
       box.gridX,
       box.gridY + 1,
       "",
-      isBlock,
-      "top"
+      isBlock
     ),
   ];
   const existingString = existing.map((e) => JSON.stringify(e));

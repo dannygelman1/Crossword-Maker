@@ -7,7 +7,6 @@ type EditorPageProps = {
 };
 
 export default function EditorPageProps({ game_id }: EditorPageProps) {
-  console.log(game_id, game_id);
   return (
     <>
       <Head>
@@ -16,7 +15,7 @@ export default function EditorPageProps({ game_id }: EditorPageProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Editor />
+      <Editor gameId={game_id} />
     </>
   );
 }

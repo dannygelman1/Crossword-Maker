@@ -21,7 +21,7 @@ export const Input = ({
   box,
   updateBox,
 }: InputProps): ReactElement => {
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(box.letter);
   return (
     <input
       className={className}
