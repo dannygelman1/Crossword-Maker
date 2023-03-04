@@ -19,7 +19,16 @@ export class BoxesResolver {
   updateBox(
     @Args('updateBoxInput') updateBoxInput: UpdateBoxInput,
   ): Promise<Box> {
-    return this.boxesService.update(updateBoxInput.id, updateBoxInput.letter);
+    if (updateBoxInput.letter)
+      return this.boxesService.updateLetter(
+        updateBoxInput.id,
+        updateBoxInput.letter,
+      );
+    else
+      return this.boxesService.updateClue(
+        updateBoxInput.id,
+        updateBoxInput.clue,
+      );
   }
 
   @Mutation(() => ID)

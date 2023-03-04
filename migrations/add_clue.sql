@@ -1,0 +1,2 @@
+ALTER TABLE boxes
+ADD COLUMN clue text DEFAULT NULL;

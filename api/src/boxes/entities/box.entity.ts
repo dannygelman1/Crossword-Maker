@@ -22,6 +22,10 @@ export class Box {
   @Column({ name: 'letter', nullable: true })
   letter?: string;
 
+  @Field({ description: 'Clue for the box.', nullable: true })
+  @Column({ name: 'clue', nullable: true })
+  clue?: string;
+
   @Field({ description: 'X position of the box.' })
   @Column({ name: 'x' })
   x!: number;

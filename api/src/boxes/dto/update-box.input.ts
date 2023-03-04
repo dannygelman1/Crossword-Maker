@@ -8,4 +8,7 @@ export class UpdateBoxInput extends PartialType(CreateBoxInput) {
 
   @Field({ description: 'Letter in the box.', nullable: true })
   letter?: string;
+
+  @Field({ description: 'Clue for the box.', nullable: true })
+  clue?: string;
 }

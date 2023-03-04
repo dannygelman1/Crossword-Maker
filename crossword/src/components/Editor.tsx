@@ -33,7 +33,6 @@ interface EditorProps {
 export const Editor = ({ gameId }: EditorProps): ReactElement => {
   const firstBox = new Box(uniqueId(), 500, 250, 0, 0, "", false);
   const [selected, setSelected] = useState<Box | undefined>(firstBox);
-  // const [numBoxesAdded, setNumBoxesAdded] = useState<number>(1);
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
@@ -62,38 +61,16 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
   }, [selected, mode]);
 
   useEffect(() => {
-    const copy = [...boxes];
-    const sortedBoxes = copy.sort((a, b) => {
-      if (a.y !== b.y) return b.y - a.y;
-      return a.x - b.x;
-    });
-    let i = 1;
-    let newBoxes: Box[] = [];
-    for (const sortedBox of sortedBoxes) {
-      const clue = shouldHaveNumber(sortedBox, copy);
-      if (["both", "vertical", "horizontal"].includes(clue)) {
-        sortedBox?.setNumber(i);
-        sortedBox.setClues(clue);
-        i += 1;
-      } else {
-        sortedBox?.unsetNumber();
-        sortedBox.setClues("none");
-      }
-      newBoxes.push(sortedBox);
-    }
+    const newBoxes = setNumbersAndClues(boxes);
     setBoxes(newBoxes);
-    console.log("here");
   }, [boxes.length]);
 
   useEffect(() => {
-    console.log("slug 1", gameId);
     loadBoxes();
   }, []);
 
   const loadBoxes = async () => {
-    console.log("slug 2", gameId);
     const boxesFromDB = await getBoxes(gameId);
-    console.log("slug 2", boxesFromDB);
     const boxModels = boxesFromDB.boxes.map(
       (box) =>
         new Box(
@@ -106,26 +83,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
           box.isblock
         )
     );
-
-    const copy = [...boxModels];
-    const sortedBoxes = copy.sort((a, b) => {
-      if (a.y !== b.y) return b.y - a.y;
-      return a.x - b.x;
-    });
-    let i = 1;
-    let newBoxes: Box[] = [];
-    for (const sortedBox of sortedBoxes) {
-      const clue = shouldHaveNumber(sortedBox, copy);
-      if (["both", "vertical", "horizontal"].includes(clue)) {
-        sortedBox?.setNumber(i);
-        sortedBox.setClues(clue);
-        i += 1;
-      } else {
-        sortedBox?.unsetNumber();
-        sortedBox.setClues("none");
-      }
-      newBoxes.push(sortedBox);
-    }
+    const newBoxes = setNumbersAndClues(boxModels);
     setBoxes(newBoxes);
   };
 
@@ -185,81 +143,6 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
       }
     };
   }, [scale, position, isDragging, startCoordinates]);
-
-  const gql = new GQLClient();
-  const createGame = async (slug: string): Promise<createGameData> => {
-    const gameData = await gql.request<createGameData, createGameVariables>(
-      CREATE_GAME,
-      {
-        createGameInput: {
-          slug,
-        },
-      }
-    );
-    return gameData;
-  };
-
-  const getGame = async (slug: string): Promise<getGameData> => {
-    const gameData = await gql.request<getGameData, getGameVariables>(
-      GET_GAME,
-      {
-        slug,
-      }
-    );
-    return gameData;
-  };
-
-  const getBoxes = async (id: string): Promise<getBoxesData> => {
-    const boxesData = await gql.request<getBoxesData, getBoxesVariables>(
-      GET_BOXES,
-      {
-        id,
-      }
-    );
-    return boxesData;
-  };
-
-  const createBox = async (
-    x: number,
-    y: number,
-    isblock: boolean
-  ): Promise<createBoxData> => {
-    const boxData = await gql.request<createBoxData, createBoxVariables>(
-      CREATE_BOX,
-      {
-        createBoxInput: {
-          game_id: gameId,
-          x,
-          y,
-          isblock,
-        },
-      }
-    );
-    console.log("create", boxData);
-    return boxData;
-  };
-
-  const updateBox = async (
-    id: string,
-    letter: string | null
-  ): Promise<updateBoxData> => {
-    const boxData = await gql.request<updateBoxData, updateBoxVariables>(
-      UPDATE_BOX,
-      {
-        updateBoxInput: {
-          id,
-          letter,
-        },
-      }
-    );
-    return boxData;
-  };
-
-  const deleteBox = async (id: string): Promise<void> => {
-    await gql.request<deleteBoxData, deleteBoxVariables>(DELETE_BOX, {
-      id,
-    });
-  };
 
   return (
     <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-red-400 absolute">
@@ -356,7 +239,8 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                     const boxData = await createBox(
                       box.gridX,
                       box.gridY,
-                      box.isBlock
+                      box.isBlock,
+                      gameId
                     );
                     box.setId(boxData.createBox.id);
                     boxes.push(box);
@@ -555,4 +439,99 @@ const shouldHaveNumber = (box: Box, existing: Box[]): Clues => {
   else if (!verticalClue && horizontalClue) return "horizontal";
   else if (verticalClue && horizontalClue) return "both";
   else return "none";
+};
+
+const setNumbersAndClues = (boxes: Box[]): Box[] => {
+  const copy = [...boxes];
+  const sortedBoxes = copy.sort((a, b) => {
+    if (a.y !== b.y) return b.y - a.y;
+    return a.x - b.x;
+  });
+  let i = 1;
+  let newBoxes: Box[] = [];
+  for (const sortedBox of sortedBoxes) {
+    const clue = shouldHaveNumber(sortedBox, copy);
+    if (["both", "vertical", "horizontal"].includes(clue)) {
+      sortedBox?.setNumber(i);
+      sortedBox.setClues(clue);
+      i += 1;
+    } else {
+      sortedBox?.unsetNumber();
+      sortedBox.setClues("none");
+    }
+    newBoxes.push(sortedBox);
+  }
+  return newBoxes;
+};
+
+const gql = new GQLClient();
+const createGame = async (slug: string): Promise<createGameData> => {
+  const gameData = await gql.request<createGameData, createGameVariables>(
+    CREATE_GAME,
+    {
+      createGameInput: {
+        slug,
+      },
+    }
+  );
+  return gameData;
+};
+
+const getGame = async (slug: string): Promise<getGameData> => {
+  const gameData = await gql.request<getGameData, getGameVariables>(GET_GAME, {
+    slug,
+  });
+  return gameData;
+};
+
+const getBoxes = async (id: string): Promise<getBoxesData> => {
+  const boxesData = await gql.request<getBoxesData, getBoxesVariables>(
+    GET_BOXES,
+    {
+      id,
+    }
+  );
+  return boxesData;
+};
+
+const createBox = async (
+  x: number,
+  y: number,
+  isblock: boolean,
+  gameId: string
+): Promise<createBoxData> => {
+  const boxData = await gql.request<createBoxData, createBoxVariables>(
+    CREATE_BOX,
+    {
+      createBoxInput: {
+        game_id: gameId,
+        x,
+        y,
+        isblock,
+      },
+    }
+  );
+  return boxData;
+};
+
+const updateBox = async (
+  id: string,
+  letter: string | null
+): Promise<updateBoxData> => {
+  const boxData = await gql.request<updateBoxData, updateBoxVariables>(
+    UPDATE_BOX,
+    {
+      updateBoxInput: {
+        id,
+        letter,
+      },
+    }
+  );
+  return boxData;
+};
+
+const deleteBox = async (id: string): Promise<void> => {
+  await gql.request<deleteBoxData, deleteBoxVariables>(DELETE_BOX, {
+    id,
+  });
 };

@@ -22,8 +22,13 @@ export class BoxesService {
     return box;
   }
 
-  async update(id: string, letter?: string): Promise<Box> {
+  async updateLetter(id: string, letter?: string): Promise<Box> {
     await this.boxesRepository.update({ id }, { letter });
+    return this.boxesRepository.findOneBy({ id });
+  }
+
+  async updateClue(id: string, clue?: string): Promise<Box> {
+    await this.boxesRepository.update({ id }, { clue });
     return this.boxesRepository.findOneBy({ id });
   }
 

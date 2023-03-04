@@ -8,6 +8,7 @@ export class Box {
   letter: string;
   isBlock: boolean;
   clues: Clues = "none";
+  content: string = "";
   number?: number;
 
   constructor(
@@ -28,7 +29,6 @@ export class Box {
     this.isBlock = isBlock;
   }
 
-  // setId()
   setId(id: string) {
     this.id = id;
   }
@@ -50,5 +50,9 @@ export class Box {
 
   setClues(clues: Clues) {
     this.clues = clues;
+  }
+
+  setContent(content: string) {
+    this.content = content;
   }
 }
