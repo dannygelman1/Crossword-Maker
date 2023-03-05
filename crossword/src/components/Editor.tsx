@@ -1,31 +1,20 @@
 import { Box, Clues } from "@/models/Box";
 import { ReactElement, useEffect, useState, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { isEqual, uniqueId } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
-import {
-  createBoxData,
-  createBoxVariables,
-  createGameData,
-  createGameVariables,
-  CREATE_BOX,
-  CREATE_GAME,
-  deleteBoxData,
-  deleteBoxVariables,
-  DELETE_BOX,
-  getBoxesData,
-  getBoxesVariables,
-  getGameData,
-  getGameVariables,
-  GET_BOXES,
-  GET_GAME,
-  GQLClient,
-  updateBoxData,
-  updateBoxVariables,
-  UPDATE_BOX,
-} from "@/lib/gqlClient";
+import { ClueInput } from "./ClueInput";
 import { useRouter } from "next/router";
 import { randomUUID } from "node:crypto";
+import {
+  getBoxes,
+  deleteBox,
+  updateBox,
+  createBox,
+  createGame,
+  getGame,
+} from "@/lib/BoxService";
 
 interface EditorProps {
   gameId: string;
@@ -80,7 +69,8 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
           box.x,
           box.y,
           box.letter ?? "",
-          box.isblock
+          box.isblock,
+          box.clue ?? ""
         )
     );
     const newBoxes = setNumbersAndClues(boxModels);
@@ -217,7 +207,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                       onFocus={() => setSelectedTextMode(box)}
                       onBlur={() => setSelectedTextMode(undefined)}
                       updateBox={(letter: string | null) => {
-                        updateBox(box.id, letter);
+                        updateBox(box.id, letter, null);
                       }}
                     />
                   )}
@@ -259,34 +249,14 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
             <span className="flex p-1 items-center justify-center">Across</span>
             {boxes.map((box) => {
               if (box.clues == "horizontal" || box.clues == "both")
-                return (
-                  <div
-                    className="flex flex-row space-x-1 m-0"
-                    key={`${box.id}_2`}
-                  >
-                    <span className="w-5 flex items-center justify-center">
-                      {box.number}
-                    </span>
-                    <input className="bg-white w-full" />
-                  </div>
-                );
+                return <ClueInput key={`${box.id}_2`} box={box} />;
             })}
           </div>
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Down</span>
             {boxes.map((box) => {
               if (box.clues == "vertical" || box.clues == "both")
-                return (
-                  <div
-                    className="flex flex-row space-x-1 m-0"
-                    key={`${box.id}_2`}
-                  >
-                    <span className="w-5 flex items-center justify-center">
-                      {box.number}
-                    </span>
-                    <input className="bg-white w-full" />
-                  </div>
-                );
+                return <ClueInput key={`${box.id}_2`} box={box} />;
             })}
           </div>
         </div>
@@ -462,76 +432,4 @@ const setNumbersAndClues = (boxes: Box[]): Box[] => {
     newBoxes.push(sortedBox);
   }
   return newBoxes;
-};
-
-const gql = new GQLClient();
-const createGame = async (slug: string): Promise<createGameData> => {
-  const gameData = await gql.request<createGameData, createGameVariables>(
-    CREATE_GAME,
-    {
-      createGameInput: {
-        slug,
-      },
-    }
-  );
-  return gameData;
-};
-
-const getGame = async (slug: string): Promise<getGameData> => {
-  const gameData = await gql.request<getGameData, getGameVariables>(GET_GAME, {
-    slug,
-  });
-  return gameData;
-};
-
-const getBoxes = async (id: string): Promise<getBoxesData> => {
-  const boxesData = await gql.request<getBoxesData, getBoxesVariables>(
-    GET_BOXES,
-    {
-      id,
-    }
-  );
-  return boxesData;
-};
-
-const createBox = async (
-  x: number,
-  y: number,
-  isblock: boolean,
-  gameId: string
-): Promise<createBoxData> => {
-  const boxData = await gql.request<createBoxData, createBoxVariables>(
-    CREATE_BOX,
-    {
-      createBoxInput: {
-        game_id: gameId,
-        x,
-        y,
-        isblock,
-      },
-    }
-  );
-  return boxData;
-};
-
-const updateBox = async (
-  id: string,
-  letter: string | null
-): Promise<updateBoxData> => {
-  const boxData = await gql.request<updateBoxData, updateBoxVariables>(
-    UPDATE_BOX,
-    {
-      updateBoxInput: {
-        id,
-        letter,
-      },
-    }
-  );
-  return boxData;
-};
-
-const deleteBox = async (id: string): Promise<void> => {
-  await gql.request<deleteBoxData, deleteBoxVariables>(DELETE_BOX, {
-    id,
-  });
 };

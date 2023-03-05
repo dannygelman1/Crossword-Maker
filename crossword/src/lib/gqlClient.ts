@@ -51,6 +51,7 @@ export const GET_BOXES = gql`
       x
       y
       isblock
+      clue
     }
   }
 `;
@@ -62,6 +63,7 @@ export interface getBoxesData {
     x: number;
     y: number;
     isblock: boolean;
+    clue: string | null;
   }[];
 }
 
@@ -127,6 +129,7 @@ export const UPDATE_BOX = gql`
     updateBox(updateBoxInput: $updateBoxInput) {
       id
       letter
+      clue
     }
   }
 `;
@@ -135,6 +138,7 @@ export interface updateBoxData {
   updateBox: {
     id: string;
     letter?: string;
+    clue?: string;
   };
 }
 
@@ -142,6 +146,7 @@ export interface updateBoxVariables {
   updateBoxInput: {
     id: string;
     letter: string | null;
+    clue: string | null;
   };
 }
 
