@@ -24,10 +24,15 @@ export class BoxesResolver {
         updateBoxInput.id,
         updateBoxInput.letter,
       );
-    else
-      return this.boxesService.updateClue(
+    else if (updateBoxInput.horiz_clue)
+      return this.boxesService.updateHorizClue(
         updateBoxInput.id,
-        updateBoxInput.clue,
+        updateBoxInput.horiz_clue,
+      );
+    else
+      return this.boxesService.updateVertClue(
+        updateBoxInput.id,
+        updateBoxInput.vert_clue,
       );
   }
 

@@ -27,8 +27,13 @@ export class BoxesService {
     return this.boxesRepository.findOneBy({ id });
   }
 
-  async updateClue(id: string, clue?: string): Promise<Box> {
-    await this.boxesRepository.update({ id }, { clue });
+  async updateHorizClue(id: string, clue?: string): Promise<Box> {
+    await this.boxesRepository.update({ id }, { horiz_clue: clue });
+    return this.boxesRepository.findOneBy({ id });
+  }
+
+  async updateVertClue(id: string, clue?: string): Promise<Box> {
+    await this.boxesRepository.update({ id }, { vert_clue: clue });
     return this.boxesRepository.findOneBy({ id });
   }
 

@@ -1,0 +1,6 @@
+ALTER TABLE boxes
+DROP COLUMN clue;
+
+ALTER TABLE boxes
+ADD COLUMN vert_clue text DEFAULT NULL,
+ADD COLUMN horiz_clue text DEFAULT NULL;

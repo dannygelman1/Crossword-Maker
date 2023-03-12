@@ -22,9 +22,13 @@ export class Box {
   @Column({ name: 'letter', nullable: true })
   letter?: string;
 
-  @Field({ description: 'Clue for the box.', nullable: true })
-  @Column({ name: 'clue', nullable: true })
-  clue?: string;
+  @Field({ description: 'Vertical clue for the box.', nullable: true })
+  @Column({ name: 'vert_clue', nullable: true })
+  vert_clue?: string;
+
+  @Field({ description: 'Horizontal clue for the box.', nullable: true })
+  @Column({ name: 'horiz_clue', nullable: true })
+  horiz_clue?: string;
 
   @Field({ description: 'X position of the box.' })
   @Column({ name: 'x' })
