@@ -14,12 +14,11 @@ export class GamesResolver {
     return this.gamesService.create(createGameInput);
   }
 
-  @Query(() => Game)
+  @Query(() => Game, { nullable: true })
   findGame(
     @Args('slug', {
       type: () => String,
       description: 'slug of the game.',
-      nullable: true,
     })
     slug: string,
   ): Promise<Game | null> {
