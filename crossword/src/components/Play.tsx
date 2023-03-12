@@ -4,14 +4,7 @@ import { isEqual, uniqueId } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
 import { ClueText } from "./Clue";
-import {
-  getBoxes,
-  deleteBox,
-  updateBox,
-  createBox,
-  createGame,
-  getGame,
-} from "@/lib/BoxService";
+import { getBoxes, updateBox } from "@/lib/BoxService";
 
 interface EditorProps {
   gameId: string;
@@ -54,7 +47,8 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
           box.y,
           box.letter ?? "",
           box.isblock,
-          box.clue ?? ""
+          box.horiz_clue ?? "",
+          box.vert_clue ?? ""
         )
     );
     const newBoxes = setNumbersAndClues(boxModels);
@@ -170,7 +164,7 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
                       onFocus={() => setSelectedTextMode(box)}
                       onBlur={() => setSelectedTextMode(undefined)}
                       updateBox={(letter: string | null) => {
-                        updateBox(box.id, letter, null);
+                        updateBox(box.id, letter, null, null);
                       }}
                     />
                   )}
@@ -184,14 +178,26 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
             <span className="flex p-1 items-center justify-center">Across</span>
             {boxes.map((box) => {
               if (box.clues === "horizontal" || box.clues === "both")
-                return <ClueText key={`${box.id}_2`} box={box} />;
+                return (
+                  <ClueText
+                    key={`${box.id}_2`}
+                    box={box}
+                    direction="horizontal"
+                  />
+                );
             })}
           </div>
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Down</span>
             {boxes.map((box) => {
               if (box.clues === "vertical" || box.clues === "both")
-                return <ClueText key={`${box.id}_2`} box={box} />;
+                return (
+                  <ClueText
+                    key={`${box.id}_2`}
+                    box={box}
+                    direction="vertical"
+                  />
+                );
             })}
           </div>
         </div>

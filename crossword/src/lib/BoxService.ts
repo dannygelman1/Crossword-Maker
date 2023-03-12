@@ -72,7 +72,8 @@ export const createBox = async (
 export const updateBox = async (
   id: string,
   letter: string | null,
-  clue: string | null
+  horizClue: string | null,
+  vertClue: string | null
 ): Promise<updateBoxData> => {
   const boxData = await gql.request<updateBoxData, updateBoxVariables>(
     UPDATE_BOX,
@@ -80,7 +81,8 @@ export const updateBox = async (
       updateBoxInput: {
         id,
         letter,
-        clue,
+        horiz_clue: horizClue,
+        vert_clue: vertClue,
       },
     }
   );

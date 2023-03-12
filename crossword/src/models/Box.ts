@@ -8,7 +8,8 @@ export class Box {
   letter: string;
   isBlock: boolean;
   clues: Clues = "none";
-  clue?: string = "";
+  horizClue?: string = "";
+  vertClue?: string = "";
   number?: number;
 
   constructor(
@@ -19,7 +20,8 @@ export class Box {
     gridY: number,
     letter: string,
     isBlock: boolean,
-    clue?: string
+    horizClue?: string,
+    vertClue?: string
   ) {
     this.id = id;
     this.x = x;
@@ -28,7 +30,8 @@ export class Box {
     this.gridY = gridY;
     this.letter = letter;
     this.isBlock = isBlock;
-    this.clue = clue;
+    this.horizClue = horizClue;
+    this.vertClue = vertClue;
   }
 
   setId(id: string) {
@@ -54,7 +57,11 @@ export class Box {
     this.clues = clues;
   }
 
-  setClue(clue: string) {
-    this.clue = clue;
+  setHorizClue(clue: string) {
+    this.horizClue = clue;
+  }
+
+  setVertClue(clue: string) {
+    this.vertClue = clue;
   }
 }
