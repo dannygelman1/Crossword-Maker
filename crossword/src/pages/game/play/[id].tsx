@@ -1,12 +1,12 @@
-import { Editor } from "@/components/Editor";
+import { Play } from "@/components/Play";
 import React from "react";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-type EditorPageProps = {
+type PlayPageProps = {
   game_id: string;
 };
 
-export default function EditorPageProps({ game_id }: EditorPageProps) {
+export default function PlayPage({ game_id }: PlayPageProps) {
   return (
     <>
       <Head>
@@ -15,13 +15,13 @@ export default function EditorPageProps({ game_id }: EditorPageProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Editor gameId={game_id} />
+      <Play gameId={game_id} />
     </>
   );
 }
 
 export const getServerSideProps: GetServerSideProps<
-  EditorPageProps,
+  PlayPageProps,
   { id: string }
 > = async ({ params }) => {
   return {

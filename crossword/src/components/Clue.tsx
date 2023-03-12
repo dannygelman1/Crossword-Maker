@@ -42,3 +42,16 @@ export const ClueInput = ({ box }: ClueInputProps): ReactElement => {
     </div>
   );
 };
+
+interface ClueTextProps {
+  box: Box;
+}
+
+export const ClueText = ({ box }: ClueTextProps): ReactElement => {
+  return (
+    <div className="flex flex-row space-x-1 m-0 px-1">
+      <span className="w-5 flex items-center justify-center">{box.number}</span>
+      <span className="flex items-center justify-center">{box.clue}</span>
+    </div>
+  );
+};

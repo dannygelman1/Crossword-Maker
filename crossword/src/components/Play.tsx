@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useState, useRef } from "react";
 import { isEqual, uniqueId } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
-import { ClueInput } from "./Clue";
+import { ClueText } from "./Clue";
 import {
   getBoxes,
   deleteBox,
@@ -16,7 +16,7 @@ import {
 interface EditorProps {
   gameId: string;
 }
-export const Editor = ({ gameId }: EditorProps): ReactElement => {
+export const Play = ({ gameId }: EditorProps): ReactElement => {
   const firstBox = new Box(uniqueId(), 500, 250, 0, 0, "", false);
   const [selected, setSelected] = useState<Box | undefined>(firstBox);
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
@@ -25,26 +25,13 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
   const boxSize = 30;
   const boxSpace = 1;
   const [boxes, setBoxes] = useState<Box[]>([firstBox]);
-  const [neighbors, setNeighbors] = useState<Box[]>([]);
-  const [mode, setMode] = useState<"create" | "delete" | "text" | "block">(
-    "create"
-  );
+
   const editorRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startCoordinates, setStartCoordinates] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (selected) {
-      setNeighbors(
-        getNeighbors(selected, boxes, boxSize, boxSpace, mode === "block")
-      );
-    } else {
-      setNeighbors([]);
-    }
-  }, [selected, mode]);
 
   useEffect(() => {
     const newBoxes = setNumbersAndClues(boxes);
@@ -150,34 +137,13 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                 <div
                   key={box.id}
                   className={cn(
-                    "border-2 absolute flex items-center justify-center z-10 ",
-                    {
-                      "border-blue-800":
-                        isEqual(selected, box) &&
-                        (mode === "create" || mode === "block"),
-                      "border-black":
-                        !isEqual(selected, box) || mode === "text",
-                      "hover:border-blue-800":
-                        !isEqual(selected, box) &&
-                        (mode === "create" || mode === "block"),
-                      "border-black hover:border-red-600":
-                        mode === "delete" && boxes.length > 1,
-                      "border-black bg-black": box.isBlock,
-                    }
+                    "border-2 absolute flex items-center justify-center z-10 border-black"
                   )}
                   style={{
                     left: `${box.x}px`,
                     bottom: `${box.y}px`,
                     width: `${boxSize}px`,
                     height: ` ${boxSize}px`,
-                  }}
-                  onClick={() => {
-                    if (mode === "text") return;
-                    if (mode === "create" || mode === "block") setSelected(box);
-                    if (mode === "delete" && boxes.length > 1) {
-                      setBoxes(boxes.filter((b) => b.id !== box.id));
-                      deleteBox(box.id);
-                    }
                   }}
                 >
                   {box?.number && (
@@ -200,7 +166,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                         caretColor: "transparent",
                       }}
                       box={box}
-                      disabled={mode !== "text"}
+                      disabled={false}
                       onFocus={() => setSelectedTextMode(box)}
                       onBlur={() => setSelectedTextMode(undefined)}
                       updateBox={(letter: string | null) => {
@@ -211,150 +177,30 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                 </div>
               );
             })}
-            {(mode === "create" || mode === "block") &&
-              neighbors.map((box, i) => (
-                <div
-                  key={i}
-                  className="border-2 border-black/40 hover:border-blue-800/40 absolute z-5"
-                  style={{
-                    left: `${box.x}px`,
-                    bottom: `${box.y}px`,
-                    width: `${boxSize}px`,
-                    height: ` ${boxSize}px`,
-                  }}
-                  onClick={async () => {
-                    const boxData = await createBox(
-                      box.gridX,
-                      box.gridY,
-                      box.isBlock,
-                      gameId
-                    );
-                    box.setId(boxData.createBox.id);
-                    boxes.push(box);
-                    setBoxes(boxes);
-                    const fileted = neighbors.filter(
-                      (n) => n.x !== box.x || n.y !== box.y
-                    );
-                    setNeighbors(fileted);
-                  }}
-                />
-              ))}
           </div>
         </div>
         <div className="flex flex-row space-x-2 h-[210px] w-[1000px] border-8 border-green-500 overflow-auto">
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Across</span>
             {boxes.map((box) => {
-              if (box.clues == "horizontal" || box.clues == "both")
-                return <ClueInput key={`${box.id}_2`} box={box} />;
+              if (box.clues === "horizontal" || box.clues === "both")
+                return <ClueText key={`${box.id}_2`} box={box} />;
             })}
           </div>
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Down</span>
             {boxes.map((box) => {
-              if (box.clues == "vertical" || box.clues == "both")
-                return <ClueInput key={`${box.id}_2`} box={box} />;
+              if (box.clues === "vertical" || box.clues === "both")
+                return <ClueText key={`${box.id}_2`} box={box} />;
             })}
           </div>
         </div>
       </div>
-      <div className="flex flex-col space-y-1">
-        <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "create",
-            "bg-green-500/50": mode !== "create",
-          })}
-          onClick={() => setMode("create")}
-        >
-          create
-        </button>
-        <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "text",
-            "bg-green-500/50": mode !== "text",
-          })}
-          onClick={() => {
-            setMode("text");
-            setSelected(undefined);
-          }}
-        >
-          text
-        </button>
-        <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "delete",
-            "bg-green-500/50": mode !== "delete",
-          })}
-          onClick={() => {
-            setMode("delete");
-            setSelected(undefined);
-          }}
-        >
-          delete
-        </button>
-        <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "block",
-            "bg-green-500/50": mode !== "block",
-          })}
-          onClick={() => {
-            setMode("block");
-          }}
-        >
-          block
-        </button>
+      <div className="flex flex-col space-y-1 bg-green-500 p-2">
+        <button>check puzzle</button>
       </div>
     </div>
   );
-};
-
-const getNeighbors = (
-  box: Box,
-  existing: Box[],
-  boxSize: number,
-  boxSpace: number,
-  isBlock: boolean
-): Box[] => {
-  const neighbors = [
-    new Box(
-      uniqueId(),
-      box.x - (boxSize + boxSpace),
-      box.y,
-      box.gridX - 1,
-      box.gridY,
-      "",
-      isBlock
-    ),
-    new Box(
-      uniqueId(),
-      box.x + (boxSize + boxSpace),
-      box.y,
-      box.gridX + 1,
-      box.gridY,
-      "",
-      isBlock
-    ),
-    new Box(
-      uniqueId(),
-      box.x,
-      box.y - (boxSize + boxSpace),
-      box.gridX,
-      box.gridY - 1,
-      "",
-      isBlock
-    ),
-    new Box(
-      uniqueId(),
-      box.x,
-      box.y + (boxSize + boxSpace),
-      box.gridX,
-      box.gridY + 1,
-      "",
-      isBlock
-    ),
-  ];
-  const existingString = existing.map((e) => JSON.stringify(e));
-  return neighbors.filter((n) => !existingString.includes(JSON.stringify(n)));
 };
 
 const shouldHaveNumber = (box: Box, existing: Box[]): Clues => {
