@@ -1,5 +1,6 @@
 import Head from "next/head";
-import Link from "next/link";
+
+import { CreatePuzzle } from "@/components/CreatePuzzle";
 
 export default function Home() {
   return (
@@ -10,11 +11,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="bg-white w-full h-full absolute flex">
-        <Link href="/game/edit/hi">
-          <div className="bg-green-500 p-2">Click here to start game</div>
-        </Link>
-      </div>
+      <CreatePuzzle />
     </>
   );
 }

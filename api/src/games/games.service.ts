@@ -19,7 +19,7 @@ export class GamesService {
     return game;
   }
 
-  async findOne(slug: string): Promise<Game> {
+  async findOne(slug: string): Promise<Game | null> {
     return this.gamesRepository.findOneBy({ slug });
   }
 }

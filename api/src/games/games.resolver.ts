@@ -16,9 +16,13 @@ export class GamesResolver {
 
   @Query(() => Game)
   findGame(
-    @Args('slug', { type: () => String, description: 'slug of the game.' })
+    @Args('slug', {
+      type: () => String,
+      description: 'slug of the game.',
+      nullable: true,
+    })
     slug: string,
-  ): Promise<Game> {
+  ): Promise<Game | null> {
     return this.gamesService.findOne(slug);
   }
 }

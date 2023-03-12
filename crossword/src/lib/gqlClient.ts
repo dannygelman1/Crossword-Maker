@@ -35,7 +35,7 @@ export const GET_GAME = gql`
 export interface getGameData {
   findGame: {
     id: string;
-    slug: string;
+    slug: string | null;
   };
 }
 
