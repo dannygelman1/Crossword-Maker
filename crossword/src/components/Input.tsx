@@ -10,6 +10,8 @@ interface InputProps {
   onBlur: () => void;
   box: Box;
   updateBox: (letter: string | null) => void;
+  isEditing?: boolean;
+  onChange?: () => void;
 }
 
 export const Input = ({
@@ -20,8 +22,10 @@ export const Input = ({
   onBlur,
   box,
   updateBox,
+  isEditing,
+  onChange,
 }: InputProps): ReactElement => {
-  const [value, setValue] = useState<string>(box.letter);
+  const [value, setValue] = useState<string>(isEditing ? box.letter : "");
   return (
     <input
       className={className}
@@ -45,9 +49,10 @@ export const Input = ({
         if (!/^[a-zA-Z]$/.test(letter)) {
           letter = box.letter === "" ? "" : box.letter;
         }
-        box.setLetter(letter);
+        if (isEditing) box.setLetter(letter);
         setValue(letter);
         updateBox(letter === "" ? null : letter);
+        if (onChange) onChange();
       }}
     />
   );

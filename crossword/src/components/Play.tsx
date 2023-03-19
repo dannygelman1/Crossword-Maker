@@ -10,19 +10,18 @@ interface EditorProps {
   gameId: string;
 }
 export const Play = ({ gameId }: EditorProps): ReactElement => {
-  const firstBox = new Box(uniqueId(), 500, 250, 0, 0, "", false);
-  const [selected, setSelected] = useState<Box | undefined>(firstBox);
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
   const boxSize = 30;
   const boxSpace = 1;
-  const [boxes, setBoxes] = useState<Box[]>([firstBox]);
+  const [boxes, setBoxes] = useState<Box[]>([]);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [checked, setChecked] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startCoordinates, setStartCoordinates] = useState({ x: 0, y: 0 });
 
@@ -111,7 +110,7 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
       }
     };
   }, [scale, position, isDragging, startCoordinates]);
-
+  console.log("boxes", boxes);
   return (
     <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-red-400 absolute">
       <div className="flex flex-col space-y-2">
@@ -152,19 +151,28 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
                         {
                           "bg-yellow-300": isEqual(selectedTextMode, box),
                           "bg-transparent": !isEqual(selectedTextMode, box),
+                          "bg-red-600":
+                            box.letter !== box.input &&
+                            box.input !== "" &&
+                            checked,
+                          "text-blue-800": box.correct,
                         }
                       )}
                       style={{
                         width: `${boxSize - 4}px`,
-                        height: ` ${boxSize - 4}px`,
+                        height: `${boxSize - 4}px`,
                         caretColor: "transparent",
                       }}
                       box={box}
-                      disabled={false}
+                      disabled={box.correct}
                       onFocus={() => setSelectedTextMode(box)}
                       onBlur={() => setSelectedTextMode(undefined)}
                       updateBox={(letter: string | null) => {
-                        updateBox(box.id, letter, null, null);
+                        console.log(letter);
+                        box.setInput(letter ?? "");
+                      }}
+                      onChange={() => {
+                        setChecked(false);
                       }}
                     />
                   )}
@@ -203,7 +211,16 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
         </div>
       </div>
       <div className="flex flex-col space-y-1 bg-green-500 p-2">
-        <button>check puzzle</button>
+        <button
+          onClick={() => {
+            setChecked(true);
+            boxes.forEach((box) => {
+              if (box.letter === box.input) box.setCorrect();
+            });
+          }}
+        >
+          check puzzle
+        </button>
       </div>
     </div>
   );

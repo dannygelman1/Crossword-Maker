@@ -17,14 +17,13 @@ interface EditorProps {
   gameId: string;
 }
 export const Editor = ({ gameId }: EditorProps): ReactElement => {
-  const firstBox = new Box(uniqueId(), 500, 250, 0, 0, "", false);
-  const [selected, setSelected] = useState<Box | undefined>(firstBox);
+  const [selected, setSelected] = useState<Box | undefined>();
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
   const boxSize = 30;
   const boxSpace = 1;
-  const [boxes, setBoxes] = useState<Box[]>([firstBox]);
+  const [boxes, setBoxes] = useState<Box[]>([]);
   const [neighbors, setNeighbors] = useState<Box[]>([]);
   const [mode, setMode] = useState<"create" | "delete" | "text" | "block">(
     "create"
@@ -188,6 +187,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                   )}
                   {!box.isBlock && (
                     <Input
+                      isEditing
                       className={cn(
                         "outline-none capitalize p-[2px] text-center",
                         {

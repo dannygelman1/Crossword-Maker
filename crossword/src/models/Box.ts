@@ -11,6 +11,8 @@ export class Box {
   horizClue?: string = "";
   vertClue?: string = "";
   number?: number;
+  input: string = "";
+  correct: boolean = false;
 
   constructor(
     id: string,
@@ -51,6 +53,14 @@ export class Box {
 
   unsetNumber() {
     this.number = undefined;
+  }
+
+  setInput(input: string) {
+    this.input = input;
+  }
+
+  setCorrect() {
+    this.correct = true;
   }
 
   setClues(clues: Clues) {
