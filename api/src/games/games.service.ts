@@ -21,7 +21,7 @@ export class GamesService {
       await manager.save(game);
 
       const box = manager.create(Box, {
-        game_id: game.id,
+        game_id: game.slug,
         x: 0,
         y: 0,
         isblock: false,
