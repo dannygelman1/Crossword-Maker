@@ -17,7 +17,8 @@ export const CreatePuzzle = ({}: CreatePuzzleProps): ReactElement => {
   const [validSlug, setValidSlug] = useState<boolean>(false);
   const [slug, setSlug] = useState<string>("");
   return (
-    <div className="bg-white w-full h-full absolute">
+    <div className="bg-[#ce9583] w-full h-full absolute flex flex-col space-y-8 items-center justify-center">
+      <div className="text-4xl font-mono text-[#3b3987]">Crossword Maker</div>
       <div className="flex flex-row space-x-2">
         <form
           onSubmit={handleSubmit(async (data: GameFormFields) => {
@@ -31,22 +32,25 @@ export const CreatePuzzle = ({}: CreatePuzzleProps): ReactElement => {
         >
           <input
             {...register("slug")}
-            className="bg-white w-40 h-8"
+            className="bg-white w-40 h-8 rounded-md"
             onChange={() => setValidSlug(false)}
           />
-          <button type="submit" className="bg-green-500 p-2 h-8">
+          <button
+            type="submit"
+            className="py-1 px-2 bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white rounded-md"
+          >
             Check if unique
           </button>
         </form>
         <button
-          className="bg-green-500 p-2 disabled:bg-green-200"
+          className="py-1 px-2 bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white disabled:bg-[#8c8ca1] disabled:text-gray-200 rounded-md"
           disabled={!validSlug}
           onClick={async () => {
             await createGame(slug);
             router.push(`/game/edit/${slug}`);
           }}
         >
-          Click here to start game
+          Start
         </button>
       </div>
     </div>

@@ -35,12 +35,15 @@ export const ClueInput = ({ box, direction }: ClueInputProps): ReactElement => {
       >
         <input
           {...register("clueContent")}
-          className="bg-white w-full"
+          className="bg-white w-full px-2 rounded-md"
           defaultValue={
             direction === "horizontal" ? box.horizClue : box.vertClue
           }
         />
-        <button className=" bg-blue-500" type="submit">
+        <button
+          className="py-1 px-2 flex items-center justify-center bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white rounded-md"
+          type="submit"
+        >
           save
         </button>
       </form>

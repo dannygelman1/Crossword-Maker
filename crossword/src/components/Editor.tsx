@@ -132,10 +132,10 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
   }, [scale, position, isDragging, startCoordinates]);
 
   return (
-    <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-red-400 absolute">
+    <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-[#ce9583] absolute">
       <div className="flex flex-col space-y-2">
         <div
-          className="w-[1000px] h-[500px] border-8 border-green-500 relative overflow-scroll"
+          className="w-[1000px] h-[500px] border-4 border-[#3b3987] rounded-lg relative overflow-scroll"
           ref={editorRef}
         >
           <div
@@ -150,19 +150,19 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                 <div
                   key={box.id}
                   className={cn(
-                    "border-2 absolute flex items-center justify-center z-10 ",
+                    "border-2 absolute flex items-center justify-center z-10",
                     {
-                      "border-blue-800":
+                      "border-[#3b3987]":
                         isEqual(selected, box) &&
                         (mode === "create" || mode === "block"),
                       "border-black":
                         !isEqual(selected, box) || mode === "text",
-                      "hover:border-blue-800":
+                      "hover:border-[#3b3987]":
                         !isEqual(selected, box) &&
                         (mode === "create" || mode === "block"),
-                      "border-black hover:border-red-600":
+                      "border-black hover:border-[#d45f5f]":
                         mode === "delete" && boxes.length > 1,
-                      "border-black bg-black": box.isBlock,
+                      "border-[#3b3987] bg-[#3b3987]": box.isBlock,
                     }
                   )}
                   style={{
@@ -191,7 +191,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
                       className={cn(
                         "outline-none capitalize p-[2px] text-center",
                         {
-                          "bg-yellow-300": isEqual(selectedTextMode, box),
+                          "bg-[#8f8eb4]": isEqual(selectedTextMode, box),
                           "bg-transparent": !isEqual(selectedTextMode, box),
                         }
                       )}
@@ -216,7 +216,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
               neighbors.map((box, i) => (
                 <div
                   key={i}
-                  className="border-2 border-black/40 hover:border-blue-800/40 absolute z-5"
+                  className="border-2 border-black/40 hover:border-[#3b3987]/70 absolute z-5"
                   style={{
                     left: `${box.x}px`,
                     bottom: `${box.y}px`,
@@ -242,7 +242,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
               ))}
           </div>
         </div>
-        <div className="flex flex-row space-x-2 h-[210px] w-[1000px] border-8 border-green-500 overflow-auto">
+        <div className="flex flex-row space-x-2 h-[210px] w-[1000px] overflow-auto px-4">
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Across</span>
             {boxes.map((box) => {
@@ -274,8 +274,10 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
       <div className="flex flex-col space-y-1">
         <button
           className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "create",
-            "bg-green-500/50": mode !== "create",
+            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+              mode === "create",
+            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+              mode !== "create",
           })}
           onClick={() => setMode("create")}
         >
@@ -283,8 +285,10 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
         </button>
         <button
           className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "text",
-            "bg-green-500/50": mode !== "text",
+            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+              mode === "text",
+            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+              mode !== "text",
           })}
           onClick={() => {
             setMode("text");
@@ -295,8 +299,10 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
         </button>
         <button
           className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "delete",
-            "bg-green-500/50": mode !== "delete",
+            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+              mode === "delete",
+            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+              mode !== "delete",
           })}
           onClick={() => {
             setMode("delete");
@@ -307,8 +313,10 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
         </button>
         <button
           className={cn("rounded-md p-2 w-[150px]", {
-            "bg-green-500": mode === "block",
-            "bg-green-500/50": mode !== "block",
+            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+              mode === "block",
+            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+              mode !== "block",
           })}
           onClick={() => {
             setMode("block");

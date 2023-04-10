@@ -6,10 +6,10 @@ import { Input } from "./Input";
 import { ClueText } from "./Clue";
 import { getBoxes, updateBox } from "@/lib/BoxService";
 
-interface EditorProps {
+interface PlayProps {
   gameId: string;
 }
-export const Play = ({ gameId }: EditorProps): ReactElement => {
+export const Play = ({ gameId }: PlayProps): ReactElement => {
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
@@ -110,12 +110,12 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
       }
     };
   }, [scale, position, isDragging, startCoordinates]);
-  console.log("boxes", boxes);
+
   return (
-    <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-red-400 absolute">
+    <div className="flex flex-row space-x-2 pt-5 items-start justify-center h-full w-full bg-[#ce9583] absolute">
       <div className="flex flex-col space-y-2">
         <div
-          className="w-[1000px] h-[500px] border-8 border-green-500 relative overflow-scroll"
+          className="w-[1000px] h-[500px] border-4 border-[#3b3987] rounded-lg relative overflow-scroll"
           ref={editorRef}
         >
           <div
@@ -130,7 +130,8 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
                 <div
                   key={box.id}
                   className={cn(
-                    "border-2 absolute flex items-center justify-center z-10 border-black"
+                    "border-2 absolute flex items-center justify-center z-10 border-black",
+                    { "border-[#3b3987] bg-[#3b3987]": box.isBlock }
                   )}
                   style={{
                     left: `${box.x}px`,
@@ -149,13 +150,13 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
                       className={cn(
                         "outline-none capitalize p-[2px] text-center",
                         {
-                          "bg-yellow-300": isEqual(selectedTextMode, box),
+                          "bg-[#8f8eb4]": isEqual(selectedTextMode, box),
                           "bg-transparent": !isEqual(selectedTextMode, box),
-                          "bg-red-600":
+                          "bg-[#d45f5f]":
                             box.letter !== box.input &&
                             box.input !== "" &&
                             checked,
-                          "text-blue-800": box.correct,
+                          "text-[#3b3987]": box.correct,
                         }
                       )}
                       style={{
@@ -181,7 +182,7 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
             })}
           </div>
         </div>
-        <div className="flex flex-row space-x-2 h-[210px] w-[1000px] border-8 border-green-500 overflow-auto">
+        <div className="flex flex-row space-x-2 h-[210px] w-[1000px] overflow-auto px-4">
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Across</span>
             {boxes.map((box) => {
@@ -210,8 +211,9 @@ export const Play = ({ gameId }: EditorProps): ReactElement => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col space-y-1 bg-green-500 p-2">
+      <div className="flex flex-col space-y-1">
         <button
+          className="rounded-md p-2 w-[150px] bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white"
           onClick={() => {
             setChecked(true);
             boxes.forEach((box) => {
