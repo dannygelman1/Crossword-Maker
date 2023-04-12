@@ -18,6 +18,7 @@ interface EditorProps {
 }
 export const Editor = ({ gameId }: EditorProps): ReactElement => {
   const [selected, setSelected] = useState<Box | undefined>();
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
@@ -56,6 +57,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
 
   const loadBoxes = async () => {
     const boxesFromDB = await getBoxes(gameId);
+    setLoading(false);
     const boxModels = boxesFromDB.boxes.map(
       (box) =>
         new Box(
@@ -138,136 +140,172 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
           className="w-[1000px] h-[500px] border-4 border-[#3b3987] rounded-lg relative overflow-scroll"
           ref={editorRef}
         >
-          <div
-            ref={contentRef}
-            className="absolute origin-center top-0 left-0 w-full h-full"
-            style={{
-              transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-            }}
-          >
-            {boxes.map((box) => {
-              return (
-                <div
-                  key={box.id}
-                  className={cn(
-                    "border-2 absolute flex items-center justify-center z-10",
-                    {
-                      "border-[#3b3987]":
-                        isEqual(selected, box) &&
-                        (mode === "create" || mode === "block"),
-                      "border-black":
-                        !isEqual(selected, box) || mode === "text",
-                      "hover:border-[#3b3987]":
-                        !isEqual(selected, box) &&
-                        (mode === "create" || mode === "block"),
-                      "border-black hover:border-[#d45f5f]":
-                        mode === "delete" && boxes.length > 1,
-                      "border-[#3b3987] bg-[#3b3987]": box.isBlock,
-                    }
-                  )}
-                  style={{
-                    left: `${box.x}px`,
-                    bottom: `${box.y}px`,
-                    width: `${boxSize}px`,
-                    height: ` ${boxSize}px`,
-                  }}
-                  onClick={() => {
-                    if (mode === "text") return;
-                    if (mode === "create" || mode === "block") setSelected(box);
-                    if (mode === "delete" && boxes.length > 1) {
-                      setBoxes(boxes.filter((b) => b.id !== box.id));
-                      deleteBox(box.id);
-                    }
-                  }}
-                >
-                  {box?.number && (
-                    <div className="text-[8px] absolute top-0 left-[1px]">
-                      {box.number}
-                    </div>
-                  )}
-                  {!box.isBlock && (
-                    <Input
-                      isEditing
-                      className={cn(
-                        "outline-none capitalize p-[2px] text-center",
-                        {
-                          "bg-[#8f8eb4]": isEqual(selectedTextMode, box),
-                          "bg-transparent": !isEqual(selectedTextMode, box),
-                        }
-                      )}
-                      style={{
-                        width: `${boxSize - 4}px`,
-                        height: ` ${boxSize - 4}px`,
-                        caretColor: "transparent",
-                      }}
-                      box={box}
-                      disabled={mode !== "text"}
-                      onFocus={() => setSelectedTextMode(box)}
-                      onBlur={() => setSelectedTextMode(undefined)}
-                      updateBox={(letter: string | null) => {
-                        updateBox(box.id, letter, null, null);
-                      }}
-                    />
-                  )}
-                </div>
-              );
-            })}
-            {(mode === "create" || mode === "block") &&
-              neighbors.map((box, i) => (
-                <div
-                  key={i}
-                  className="border-2 border-black/40 hover:border-[#3b3987]/70 absolute z-5"
-                  style={{
-                    left: `${box.x}px`,
-                    bottom: `${box.y}px`,
-                    width: `${boxSize}px`,
-                    height: ` ${boxSize}px`,
-                  }}
-                  onClick={async () => {
-                    const boxData = await createBox(
-                      box.gridX,
-                      box.gridY,
-                      box.isBlock,
-                      gameId
-                    );
-                    box.setId(boxData.createBox.id);
-                    boxes.push(box);
-                    setBoxes(boxes);
-                    const fileted = neighbors.filter(
-                      (n) => n.x !== box.x || n.y !== box.y
-                    );
-                    setNeighbors(fileted);
-                  }}
-                />
-              ))}
-          </div>
+          {loading && (
+            <div
+              className="absolute origin-center top-0 left-0 w-full h-full"
+              style={{
+                transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+              }}
+            >
+              {[-2, -1, 0, 1, 2].map((num, i) => {
+                return (
+                  <div
+                    key={i}
+                    className={cn(
+                      "absolute flex items-center justify-center z-10 bg-[#8f8eb4] animate-pulse"
+                    )}
+                    style={{
+                      left: `${500 + num * (boxSize + boxSpace)}px`,
+                      bottom: `${250}px`,
+                      width: `${boxSize}px`,
+                      height: ` ${boxSize}px`,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
+          {!loading && (
+            <div
+              ref={contentRef}
+              className="absolute origin-center top-0 left-0 w-full h-full"
+              style={{
+                transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+              }}
+            >
+              {boxes.map((box) => {
+                return (
+                  <div
+                    key={box.id}
+                    className={cn(
+                      "border-2 absolute flex items-center justify-center z-10",
+                      {
+                        "border-[#3b3987]":
+                          (isEqual(selected, box) &&
+                            (mode === "create" || mode === "block")) ||
+                          box.isBlock,
+                        "border-black": !isEqual(selected, box) && !box.isBlock,
+                        "hover:border-[#3b3987]":
+                          !isEqual(selected, box) &&
+                          (mode === "create" || mode === "block"),
+                        "hover:border-[#d45f5f]":
+                          mode === "delete" && boxes.length > 1,
+                        "bg-[#3b3987]": box.isBlock,
+                      }
+                    )}
+                    style={{
+                      left: `${box.x}px`,
+                      bottom: `${box.y}px`,
+                      width: `${boxSize}px`,
+                      height: ` ${boxSize}px`,
+                    }}
+                    onClick={() => {
+                      if (mode === "text") return;
+                      if (mode === "create" || mode === "block")
+                        setSelected(box);
+                      if (mode === "delete" && boxes.length > 1) {
+                        setBoxes(boxes.filter((b) => b.id !== box.id));
+                        deleteBox(box.id);
+                      }
+                    }}
+                  >
+                    {box?.number && (
+                      <div className="text-[8px] absolute top-0 left-[1px]">
+                        {box.number}
+                      </div>
+                    )}
+                    {!box.isBlock && (
+                      <Input
+                        isEditing
+                        className={cn(
+                          "outline-none capitalize p-[2px] text-center",
+                          {
+                            "bg-[#8f8eb4]": isEqual(selectedTextMode, box),
+                            "bg-transparent": !isEqual(selectedTextMode, box),
+                          }
+                        )}
+                        style={{
+                          width: `${boxSize - 4}px`,
+                          height: ` ${boxSize - 4}px`,
+                          caretColor: "transparent",
+                        }}
+                        box={box}
+                        disabled={mode !== "text"}
+                        onFocus={() => setSelectedTextMode(box)}
+                        onBlur={() => setSelectedTextMode(undefined)}
+                        updateBox={(letter: string | null) => {
+                          updateBox(box.id, letter, null, null);
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+              {(mode === "create" || mode === "block") &&
+                neighbors.map((box, i) => (
+                  <div
+                    key={i}
+                    className="border-2 border-black/40 hover:border-[#3b3987]/70 absolute z-5"
+                    style={{
+                      left: `${box.x}px`,
+                      bottom: `${box.y}px`,
+                      width: `${boxSize}px`,
+                      height: ` ${boxSize}px`,
+                    }}
+                    onClick={async () => {
+                      const boxData = await createBox(
+                        box.gridX,
+                        box.gridY,
+                        box.isBlock,
+                        gameId
+                      );
+                      box.setId(boxData.createBox.id);
+                      boxes.push(box);
+                      setBoxes(boxes);
+                      const fileted = neighbors.filter(
+                        (n) => n.x !== box.x || n.y !== box.y
+                      );
+                      setNeighbors(fileted);
+                    }}
+                  />
+                ))}
+            </div>
+          )}
         </div>
         <div className="flex flex-row space-x-2 h-[210px] w-[1000px] overflow-auto px-4">
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Across</span>
-            {boxes.map((box) => {
-              if (box.clues == "horizontal" || box.clues == "both")
-                return (
-                  <ClueInput
-                    key={`${box.id}_2`}
-                    box={box}
-                    direction="horizontal"
-                  />
-                );
-            })}
+            {loading ? (
+              <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+            ) : (
+              boxes.map((box) => {
+                if (box.clues == "horizontal" || box.clues == "both")
+                  return (
+                    <ClueInput
+                      key={`${box.id}_2`}
+                      box={box}
+                      direction="horizontal"
+                    />
+                  );
+              })
+            )}
           </div>
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Down</span>
-            {boxes.map((box) => {
-              if (box.clues == "vertical" || box.clues == "both")
-                return (
-                  <ClueInput
-                    key={`${box.id}_2`}
-                    box={box}
-                    direction="vertical"
-                  />
-                );
-            })}
+            {loading ? (
+              <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+            ) : (
+              boxes.map((box) => {
+                if (box.clues == "vertical" || box.clues == "both")
+                  return (
+                    <ClueInput
+                      key={`${box.id}_2`}
+                      box={box}
+                      direction="vertical"
+                    />
+                  );
+              })
+            )}
           </div>
         </div>
       </div>
