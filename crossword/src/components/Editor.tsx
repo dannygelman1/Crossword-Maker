@@ -276,7 +276,11 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Across</span>
             {loading ? (
-              <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+              <>
+                <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+                <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+                <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+              </>
             ) : (
               boxes.map((box) => {
                 if (box.clues == "horizontal" || box.clues == "both")
@@ -293,7 +297,11 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
           <div className="flex flex-col space-y-1 w-1/2">
             <span className="flex p-1 items-center justify-center">Down</span>
             {loading ? (
-              <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+              <>
+                <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+                <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+                <div className="flex w-full h-8 bg-gray-200 animate-pulse rounded-md" />
+              </>
             ) : (
               boxes.map((box) => {
                 if (box.clues == "vertical" || box.clues == "both")
@@ -412,8 +420,10 @@ const getNeighbors = (
       isBlock
     ),
   ];
-  const existingString = existing.map((e) => JSON.stringify(e));
-  return neighbors.filter((n) => !existingString.includes(JSON.stringify(n)));
+  const existingString = existing.map((e) => `${e.gridX},${e.gridY}`);
+  return neighbors.filter(
+    (n) => !existingString.includes(`${n.gridX},${n.gridY}`)
+  );
 };
 
 const shouldHaveNumber = (box: Box, existing: Box[]): Clues => {
