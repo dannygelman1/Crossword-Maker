@@ -3,12 +3,14 @@ import { Box } from 'src/boxes/entities/box.entity';
 import {
   Column,
   CreateDateColumn,
+  Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @ObjectType()
+@Entity('user_boxes')
 export class UserBox {
   @Field(() => ID, { description: 'ID of the box.' })
   @PrimaryGeneratedColumn('uuid')
