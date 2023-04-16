@@ -1,0 +1,39 @@
+import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
+import { Box } from 'src/boxes/entities/box.entity';
+import {
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+@ObjectType()
+export class UserBox {
+  @Field(() => ID, { description: 'ID of the box.' })
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Field({ description: 'ID of the box.' })
+  @Column({ name: 'box_id' })
+  box_id!: string;
+
+  @Field({ description: 'Name of user.' })
+  @Column({ name: 'name' })
+  name!: string;
+
+  @Field({ description: 'Letter in the box.', nullable: true })
+  @Column({ name: 'letter', nullable: true })
+  letter?: string;
+
+  @ManyToOne(() => Box, (box) => box.userBoxes)
+  box: Box;
+
+  @Field({ description: 'Creation timestamp of the game.' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  createdAt!: Date;
+
+  @Field({ description: 'Last updated timestamp of the game.' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  updatedAt!: Date;
+}

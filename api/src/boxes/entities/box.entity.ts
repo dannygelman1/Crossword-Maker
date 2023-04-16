@@ -6,6 +6,8 @@ import { CreateDateColumn } from 'typeorm/decorator/columns/CreateDateColumn';
 
 import { PrimaryGeneratedColumn } from 'typeorm/decorator/columns/PrimaryGeneratedColumn';
 import { UpdateDateColumn } from 'typeorm/decorator/columns/UpdateDateColumn';
+import { JoinColumn, OneToMany } from 'typeorm';
+import { UserBox } from 'src/user_boxes/entities/user_box.entity';
 
 @ObjectType()
 @Entity('boxes')
@@ -41,6 +43,10 @@ export class Box {
   @Field({ description: 'Whether or not the box is a block.' })
   @Column({ name: 'isblock' })
   isblock!: boolean;
+
+  @OneToMany(() => UserBox, (userBox) => userBox.box)
+  @JoinColumn({ name: 'box_id' })
+  userBoxes: UserBox[];
 
   @Field({ description: 'Creation timestamp of the game.' })
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })

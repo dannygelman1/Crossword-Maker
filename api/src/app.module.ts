@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GamesModule } from './games/games.module';
 import { BoxesModule } from './boxes/boxes.module';
+import { UserBoxesModule } from './user_boxes/user_boxes.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { BoxesModule } from './boxes/boxes.module';
     }),
     GamesModule,
     BoxesModule,
+    UserBoxesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
