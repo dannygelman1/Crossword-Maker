@@ -5,6 +5,7 @@ import cn from "classnames";
 import { Input } from "./Input";
 import { Viewport } from "./Viewport";
 import { CluesSection } from "./CluesSection";
+import useClipboard from "react-use-clipboard";
 import { ClueInput } from "./CluesSection";
 import {
   getBoxes,
@@ -37,6 +38,12 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
     x: 0,
     y: 0,
   });
+  const [isGameCodeCopied, setGameCodeCopied] = useClipboard(
+    `https://crossword-sepia.vercel.app/game/edit/${gameId}`,
+    {
+      successDuration: 3000,
+    }
+  );
 
   useEffect(() => {
     if (selected) {
@@ -216,7 +223,61 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
         </Viewport>
         <CluesSection boxes={boxes} loading={loading} editOrPlay="edit" />
       </div>
-      <div className="flex flex-col space-y-1">
+      <div className="flex flex-col space-y-16">
+        <div className="flex flex-col space-y-1">
+          <button
+            className={cn("rounded-md p-2 w-[150px]", {
+              "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+                mode === "create",
+              "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+                mode !== "create",
+            })}
+            onClick={() => setMode("create")}
+          >
+            create
+          </button>
+          <button
+            className={cn("rounded-md p-2 w-[150px]", {
+              "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+                mode === "text",
+              "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+                mode !== "text",
+            })}
+            onClick={() => {
+              setMode("text");
+              setSelected(undefined);
+            }}
+          >
+            text
+          </button>
+          <button
+            className={cn("rounded-md p-2 w-[150px]", {
+              "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+                mode === "delete",
+              "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+                mode !== "delete",
+            })}
+            onClick={() => {
+              setMode("delete");
+              setSelected(undefined);
+            }}
+          >
+            delete
+          </button>
+          <button
+            className={cn("rounded-md p-2 w-[150px]", {
+              "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
+                mode === "block",
+              "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
+                mode !== "block",
+            })}
+            onClick={() => {
+              setMode("block");
+            }}
+          >
+            block
+          </button>
+        </div>
         <button
           className={cn("rounded-md p-2 w-[150px]", {
             "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
@@ -224,50 +285,9 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
             "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
               mode !== "create",
           })}
-          onClick={() => setMode("create")}
+          onClick={() => setGameCodeCopied()}
         >
-          create
-        </button>
-        <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
-              mode === "text",
-            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
-              mode !== "text",
-          })}
-          onClick={() => {
-            setMode("text");
-            setSelected(undefined);
-          }}
-        >
-          text
-        </button>
-        <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
-              mode === "delete",
-            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
-              mode !== "delete",
-          })}
-          onClick={() => {
-            setMode("delete");
-            setSelected(undefined);
-          }}
-        >
-          delete
-        </button>
-        <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
-              mode === "block",
-            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
-              mode !== "block",
-          })}
-          onClick={() => {
-            setMode("block");
-          }}
-        >
-          block
+          {!isGameCodeCopied ? "Copy link" : "Copied!"}
         </button>
       </div>
     </div>
@@ -373,4 +393,13 @@ const setNumbersAndClues = (boxes: Box[]): Box[] => {
     newBoxes.push(sortedBox);
   }
   return newBoxes;
+};
+
+const copyToClipboard = (text: string) => {
+  const input = document.createElement("input");
+  input.setAttribute("value", text);
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand("copy");
+  document.body.removeChild(input);
 };
