@@ -32,7 +32,7 @@ export const CreatePuzzle = ({}: CreatePuzzleProps): ReactElement => {
         >
           <input
             {...register("slug")}
-            className="bg-white w-40 h-8 rounded-md"
+            className="bg-white w-40 h-8 rounded-md p-1"
             onChange={() => setValidSlug(false)}
             placeholder="Name of puzzle"
           />
