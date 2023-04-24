@@ -34,6 +34,7 @@ export const CreatePuzzle = ({}: CreatePuzzleProps): ReactElement => {
             {...register("slug")}
             className="bg-white w-40 h-8 rounded-md"
             onChange={() => setValidSlug(false)}
+            placeholder="Name of puzzle"
           />
           <button
             type="submit"
