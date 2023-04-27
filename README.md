@@ -9,3 +9,7 @@ One day, as I was trying to come up with a birthday present idea for a friend, I
 And so, the idea for crossword maker was born - a web application that lets you create crossword puzzles and share them with friends to solve!
 
 ## How to play
+
+<video src="./quicker.mp4" autoplay>
+Your browser does not support the video tag.
+</video>
