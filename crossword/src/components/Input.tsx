@@ -28,6 +28,7 @@ export const Input = ({
   const [value, setValue] = useState<string>(isEditing ? box.letter : "");
   return (
     <input
+      autoComplete="off"
       className={className}
       style={style}
       disabled={disabled}
