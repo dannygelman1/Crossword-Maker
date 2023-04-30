@@ -99,7 +99,7 @@ export const ClueInput = ({ box, direction }: ClueInputProps): ReactElement => {
         <input
           {...register("clueContent")}
           autoComplete="off"
-          className="bg-white w-full px-2 rounded-md"
+          className="bg-white w-full px-2 rounded-md focus:outline-none focus:border-0"
           defaultValue={
             direction === "horizontal" ? box.horizClue : box.vertClue
           }
