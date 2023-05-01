@@ -39,7 +39,7 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
     y: 0,
   });
   const [isGameCodeCopied, setGameCodeCopied] = useClipboard(
-    `https://crossword-sepia.vercel.app/game/edit/${gameId}`,
+    `https://crossword-sepia.vercel.app/game/play/${gameId}`,
     {
       successDuration: 3000,
     }
