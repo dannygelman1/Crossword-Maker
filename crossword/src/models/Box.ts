@@ -12,7 +12,7 @@ export class Box {
   vertClue?: string = "";
   number?: number;
   input: string = "";
-  correct: boolean = false;
+  playState: "correct" | "wrong" | "unchecked" = "unchecked";
 
   constructor(
     id: string,
@@ -59,8 +59,8 @@ export class Box {
     this.input = input;
   }
 
-  setCorrect() {
-    this.correct = true;
+  setPlayState(playState: "correct" | "wrong" | "unchecked") {
+    this.playState = playState;
   }
 
   setClues(clues: Clues) {

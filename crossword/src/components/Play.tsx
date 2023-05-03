@@ -24,7 +24,7 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
     x: 0,
     y: 0,
   });
-  const [checked, setChecked] = useState<boolean>(false);
+  const [, setChecked] = useState<boolean>(false);
 
   useEffect(() => {
     const newBoxes = setNumbersAndClues(boxes);
@@ -129,10 +129,9 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
                             "bg-[#8f8eb4]": isEqual(selectedTextMode, box),
                             "bg-transparent": !isEqual(selectedTextMode, box),
                             "bg-[#d45f5f]":
-                              box.letter !== box.input &&
-                              box.input !== "" &&
-                              checked,
-                            "text-[#3b3987]": box.correct,
+                              box.playState === "wrong" &&
+                              !isEqual(selectedTextMode, box),
+                            "text-[#3b3987]": box.playState === "correct",
                           }
                         )}
                         style={{
@@ -141,15 +140,15 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
                           caretColor: "transparent",
                         }}
                         box={box}
-                        disabled={box.correct}
+                        disabled={box.playState === "correct"}
                         onFocus={() => setSelectedTextMode(box)}
                         onBlur={() => setSelectedTextMode(undefined)}
                         updateBox={(letter: string | null) => {
-                          console.log(letter);
                           box.setInput(letter ?? "");
                         }}
                         onChange={() => {
                           setChecked(false);
+                          box.setPlayState("unchecked");
                         }}
                       />
                     )}
@@ -167,7 +166,9 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
           onClick={() => {
             setChecked(true);
             boxes.forEach((box) => {
-              if (box.letter === box.input) box.setCorrect();
+              if (box.letter.toLowerCase() === box.input.toLowerCase())
+                box.setPlayState("correct");
+              else if (box.input !== "") box.setPlayState("wrong");
             });
           }}
         >
