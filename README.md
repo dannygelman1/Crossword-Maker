@@ -86,7 +86,21 @@ There are a few key features when creating the crossword puzzle.
   </tr>
 </table>
 
-## Example of a frog shaped crossword
+# Example of a frog shaped crossword
+
+## Making the puzzle
+
+1. Using all the features listed above, you can create puzzles of any shape!
 
 https://user-images.githubusercontent.com/45411340/234771835-880aa5b2-bb95-441d-9a83-a681fac607bf.mp4
+
+
+2. You can fill in the crossword with the answers and clues for your friend to solve.
+
+https://user-images.githubusercontent.com/45411340/235391052-43d3b803-9e4c-4ada-978d-d87f599e21b5.mp4
+
+
+3. You can copy the play link to send to you friend to play and they can check the puzzle as much as they want!
+
+https://user-images.githubusercontent.com/45411340/235391066-bf56deb3-2982-4026-b53b-b5b71fb8ce0d.mp4
 
