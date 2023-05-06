@@ -17,7 +17,7 @@ export class UserBoxesService {
     console.log('service createUserBoxInput', createUserBoxInput);
     let userBox = new UserBox();
 
-    userBox.box_id = createUserBoxInput.box_id;
+    userBox.boxId = createUserBoxInput.boxId;
     userBox.name = createUserBoxInput.name;
     userBox.letter = createUserBoxInput.letter;
     console.log('userBox', userBox);
@@ -26,14 +26,14 @@ export class UserBoxesService {
     return userBox;
   }
 
-  // async findAll(name: string, game_id: string): Promise<UserBox[]> {
-  //   return this.userBoxRepository
-  //     .createQueryBuilder('userBox')
-  //     .leftJoin(Box, 'box', 'box.id = userBox.box_id')
-  //     .where('userBox.name = :name', { name })
-  //     .andWhere('box.game_id = :gameId', { gameId: game_id })
-  //     .getMany();
-  // }
+  async findAll(name: string, game_id: string): Promise<UserBox[]> {
+    return this.userBoxRepository
+      .createQueryBuilder('userBox')
+      .leftJoin(Box, 'box', 'box.id = userBox.box_id')
+      .where('userBox.name = :name', { name })
+      .andWhere('userBox.game_id = :gameId', { gameId: game_id })
+      .getMany();
+  }
 
   async update(id: string, letter?: string): Promise<UserBox> {
     await this.userBoxRepository.update({ id }, { letter });

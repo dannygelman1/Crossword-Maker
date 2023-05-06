@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -18,7 +19,7 @@ export class UserBox {
 
   @Field({ description: 'ID of the box.' })
   @Column({ name: 'box_id' })
-  box_id!: string;
+  boxId!: string;
 
   @Field({ description: 'Name of user.' })
   @Column({ name: 'name' })
@@ -28,8 +29,9 @@ export class UserBox {
   @Column({ name: 'letter', nullable: true })
   letter?: string;
 
-  // @ManyToOne(() => Box, (box) => box.userBoxes)
-  // box: Box;
+  @ManyToOne(() => Box, (box) => box.userBoxes)
+  @JoinColumn({ name: 'box_id' })
+  box: Box;
 
   @Field({ description: 'Creation timestamp of the game.' })
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
