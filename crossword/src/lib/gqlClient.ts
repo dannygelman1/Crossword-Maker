@@ -170,3 +170,56 @@ export interface deleteBoxData {
 export interface deleteBoxVariables {
   id: string;
 }
+
+export const CREATE_USER_BOX = gql`
+  mutation createUserBox($createUserBoxInput: CreateUserBoxInput!) {
+    createUserBox(createUserBoxInput: $createUserBoxInput) {
+      id
+      boxId
+      name
+      letter
+    }
+  }
+`;
+
+export interface createUserBoxData {
+  createUserBox: {
+    id: string;
+    boxId: string;
+    name: string;
+    letter: string;
+  };
+}
+
+export interface createUserBoxVariables {
+  createUserBoxInput: {
+    boxId: string;
+    name: string;
+    letter: string;
+  };
+}
+
+export const GET_USER_BOXES = gql`
+  query userBoxes($name: String!, $game_id: String!) {
+    userBoxes(name: $name, game_id: $game_id) {
+      id
+      boxId
+      name
+      letter
+    }
+  }
+`;
+
+export interface getUserBoxesData {
+  userBoxes: {
+    id: string;
+    boxId: string;
+    name: string;
+    letter: string;
+  }[];
+}
+
+export interface getUserBoxesVariables {
+  name: string;
+  game_id: string;
+}

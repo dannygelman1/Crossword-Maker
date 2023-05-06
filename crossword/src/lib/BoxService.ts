@@ -3,8 +3,11 @@ import {
   createBoxVariables,
   createGameData,
   createGameVariables,
+  createUserBoxData,
+  createUserBoxVariables,
   CREATE_BOX,
   CREATE_GAME,
+  CREATE_USER_BOX,
   deleteBoxData,
   deleteBoxVariables,
   DELETE_BOX,
@@ -12,14 +15,18 @@ import {
   getBoxesVariables,
   getGameData,
   getGameVariables,
+  getUserBoxesData,
+  getUserBoxesVariables,
   GET_BOXES,
   GET_GAME,
+  GET_USER_BOXES,
   GQLClient,
   updateBoxData,
   updateBoxVariables,
   UPDATE_BOX,
 } from "@/lib/gqlClient";
 const gql = new GQLClient();
+
 export const createGame = async (slug: string): Promise<createGameData> => {
   const gameData = await gql.request<createGameData, createGameVariables>(
     CREATE_GAME,
@@ -93,4 +100,40 @@ export const deleteBox = async (id: string): Promise<void> => {
   await gql.request<deleteBoxData, deleteBoxVariables>(DELETE_BOX, {
     id,
   });
+};
+
+export const createUserBox = async (
+  boxId: string,
+  name: string,
+  letter: string
+): Promise<createUserBoxData> => {
+  console.log("request");
+  const userBoxData = await gql.request<
+    createUserBoxData,
+    createUserBoxVariables
+  >(CREATE_USER_BOX, {
+    createUserBoxInput: {
+      boxId,
+      name,
+      letter,
+    },
+  });
+  console.log("boxData", userBoxData);
+  return userBoxData;
+};
+
+export const getUserBoxes = async (
+  gameId: string,
+  name: string
+): Promise<getUserBoxesData> => {
+  console.log("request");
+  const useBoxes = await gql.request<getUserBoxesData, getUserBoxesVariables>(
+    GET_USER_BOXES,
+    {
+      name,
+      game_id: gameId,
+    }
+  );
+  console.log("boxData", useBoxes);
+  return useBoxes;
 };

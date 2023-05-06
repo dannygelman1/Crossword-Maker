@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useState, useRef } from "react";
 import { isEqual, uniqueId } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
-import { getBoxes } from "@/lib/BoxService";
+import { createUserBox, getBoxes, getUserBoxes } from "@/lib/BoxService";
 import { CluesSection } from "./CluesSection";
 import { Viewport } from "./Viewport";
 
@@ -33,6 +33,7 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
 
   useEffect(() => {
     loadBoxes();
+    loadUserBoxes();
   }, []);
 
   const loadBoxes = async () => {
@@ -54,6 +55,11 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
     );
     const newBoxes = setNumbersAndClues(boxModels);
     setBoxes(newBoxes);
+  };
+
+  const loadUserBoxes = async () => {
+    const userBoxes = await getUserBoxes(gameId, "danny");
+    console.log("userBoxes", userBoxes);
   };
 
   return (
@@ -143,7 +149,9 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
                         disabled={box.playState === "correct"}
                         onFocus={() => setSelectedTextMode(box)}
                         onBlur={() => setSelectedTextMode(undefined)}
-                        updateBox={(letter: string | null) => {
+                        updateBox={async (letter: string | null) => {
+                          console.log("update");
+                          await createUserBox(box.id, "danny", letter ?? "");
                           box.setInput(letter ?? "");
                         }}
                         onChange={() => {
