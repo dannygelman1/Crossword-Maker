@@ -29,9 +29,9 @@ export class UserBoxesService {
   async findAll(name: string, game_id: string): Promise<UserBox[]> {
     return this.userBoxRepository
       .createQueryBuilder('userBox')
-      .leftJoin(Box, 'box', 'box.id = userBox.box_id')
+      .leftJoinAndSelect('userBox.box', 'box')
       .where('userBox.name = :name', { name })
-      .andWhere('userBox.game_id = :gameId', { gameId: game_id })
+      .andWhere('box.game_id = :gameId', { gameId: game_id })
       .getMany();
   }
 
