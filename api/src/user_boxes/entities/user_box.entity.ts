@@ -28,8 +28,8 @@ export class UserBox {
   @Column({ name: 'letter', nullable: true })
   letter?: string;
 
-  @ManyToOne(() => Box, (box) => box.userBoxes)
-  box: Box;
+  // @ManyToOne(() => Box, (box) => box.userBoxes)
+  // box: Box;
 
   @Field({ description: 'Creation timestamp of the game.' })
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })

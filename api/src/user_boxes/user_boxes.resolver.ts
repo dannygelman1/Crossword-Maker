@@ -12,16 +12,17 @@ export class UserBoxesResolver {
   createUserBox(
     @Args('createUserBoxInput') createUserBoxInput: CreateUserBoxInput,
   ): Promise<UserBox> {
+    console.log('createUserBoxInput', createUserBoxInput);
     return this.userBoxesService.create(createUserBoxInput);
   }
 
-  @Query(() => [UserBox], { name: 'userBoxes' })
-  findAll(
-    @Args('name', { type: () => String }) name: string,
-    @Args('game_id', { type: () => String }) game_id: string,
-  ): Promise<UserBox[]> {
-    return this.userBoxesService.findAll(name, game_id);
-  }
+  // @Query(() => [UserBox], { name: 'userBoxes' })
+  // findAll(
+  //   @Args('name', { type: () => String }) name: string,
+  //   @Args('game_id', { type: () => String }) game_id: string,
+  // ): Promise<UserBox[]> {
+  //   return this.userBoxesService.findAll(name, game_id);
+  // }
 
   @Mutation(() => UserBox)
   update(@Args('updateUserBoxInput') updateUserBoxInput: UpdateUserBoxInput) {

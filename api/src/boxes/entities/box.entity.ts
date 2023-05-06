@@ -44,9 +44,9 @@ export class Box {
   @Column({ name: 'isblock' })
   isblock!: boolean;
 
-  @OneToMany(() => UserBox, (userBox) => userBox.box)
-  @JoinColumn({ name: 'box_id' })
-  userBoxes: UserBox[];
+  // @OneToMany(() => UserBox, (userBox) => userBox.box)
+  // @JoinColumn({ name: 'box_id' })
+  // userBoxes: UserBox[];
 
   @Field({ description: 'Creation timestamp of the game.' })
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })

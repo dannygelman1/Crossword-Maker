@@ -14,24 +14,26 @@ export class UserBoxesService {
   ) {}
 
   async create(createUserBoxInput: CreateUserBoxInput): Promise<UserBox> {
+    console.log('service createUserBoxInput', createUserBoxInput);
     let userBox = new UserBox();
 
     userBox.box_id = createUserBoxInput.box_id;
     userBox.name = createUserBoxInput.name;
     userBox.letter = createUserBoxInput.letter;
-
+    console.log('userBox', userBox);
     userBox = await this.userBoxRepository.save(userBox);
+    console.log('userBox saved', userBox);
     return userBox;
   }
 
-  async findAll(name: string, game_id: string): Promise<UserBox[]> {
-    return this.userBoxRepository
-      .createQueryBuilder('userBox')
-      .leftJoin(Box, 'box', 'box.id = userBox.box_id')
-      .where('userBox.name = :name', { name })
-      .andWhere('box.game_id = :gameId', { gameId: game_id })
-      .getMany();
-  }
+  // async findAll(name: string, game_id: string): Promise<UserBox[]> {
+  //   return this.userBoxRepository
+  //     .createQueryBuilder('userBox')
+  //     .leftJoin(Box, 'box', 'box.id = userBox.box_id')
+  //     .where('userBox.name = :name', { name })
+  //     .andWhere('box.game_id = :gameId', { gameId: game_id })
+  //     .getMany();
+  // }
 
   async update(id: string, letter?: string): Promise<UserBox> {
     await this.userBoxRepository.update({ id }, { letter });
