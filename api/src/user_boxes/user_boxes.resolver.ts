@@ -11,7 +11,7 @@ export class UserBoxesResolver {
   @Mutation(() => UserBox)
   createUserBox(
     @Args('createUserBoxInput') createUserBoxInput: CreateUserBoxInput,
-  ) {
+  ): Promise<UserBox> {
     return this.userBoxesService.create(createUserBoxInput);
   }
 
