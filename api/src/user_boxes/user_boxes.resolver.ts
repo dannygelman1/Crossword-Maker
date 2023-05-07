@@ -12,7 +12,6 @@ export class UserBoxesResolver {
   createUserBox(
     @Args('createUserBoxInput') createUserBoxInput: CreateUserBoxInput,
   ): Promise<UserBox> {
-    console.log('createUserBoxInput', createUserBoxInput);
     return this.userBoxesService.create(createUserBoxInput);
   }
 

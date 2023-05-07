@@ -25,7 +25,9 @@ export const Input = ({
   isEditing,
   onChange,
 }: InputProps): ReactElement => {
-  const [value, setValue] = useState<string>(isEditing ? box.letter : "");
+  const [value, setValue] = useState<string>(
+    isEditing ? box.letter : box.input
+  );
   return (
     <input
       autoComplete="off"

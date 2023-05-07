@@ -81,7 +81,6 @@ export const ClueInput = ({ box, direction }: ClueInputProps): ReactElement => {
     id: string,
     { clueContent }: ClueFormFields
   ): Promise<void> => {
-    console.log("submit", id, clueContent);
     if (direction === "horizontal")
       await updateBox(id, null, clueContent, null);
     else await updateBox(id, null, null, clueContent);

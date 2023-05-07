@@ -23,7 +23,10 @@ import {
   GQLClient,
   updateBoxData,
   updateBoxVariables,
+  updateUserBoxData,
+  updateUserBoxVariables,
   UPDATE_BOX,
+  UPDATE_USER_BOX,
 } from "@/lib/gqlClient";
 const gql = new GQLClient();
 
@@ -107,7 +110,6 @@ export const createUserBox = async (
   name: string,
   letter: string
 ): Promise<createUserBoxData> => {
-  console.log("request");
   const userBoxData = await gql.request<
     createUserBoxData,
     createUserBoxVariables
@@ -118,7 +120,6 @@ export const createUserBox = async (
       letter,
     },
   });
-  console.log("boxData", userBoxData);
   return userBoxData;
 };
 
@@ -126,7 +127,6 @@ export const getUserBoxes = async (
   gameId: string,
   name: string
 ): Promise<getUserBoxesData> => {
-  console.log("request");
   const useBoxes = await gql.request<getUserBoxesData, getUserBoxesVariables>(
     GET_USER_BOXES,
     {
@@ -134,6 +134,21 @@ export const getUserBoxes = async (
       game_id: gameId,
     }
   );
-  console.log("boxData", useBoxes);
+  return useBoxes;
+};
+
+export const updateUserBox = async (
+  id: string,
+  letter?: string
+): Promise<updateUserBoxData> => {
+  const useBoxes = await gql.request<updateUserBoxData, updateUserBoxVariables>(
+    UPDATE_USER_BOX,
+    {
+      updateUserBoxInput: {
+        id,
+        letter,
+      },
+    }
+  );
   return useBoxes;
 };

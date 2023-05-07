@@ -223,3 +223,26 @@ export interface getUserBoxesVariables {
   name: string;
   game_id: string;
 }
+
+export const UPDATE_USER_BOX = gql`
+  mutation update($updateUserBoxInput: UpdateUserBoxInput!) {
+    update(updateUserBoxInput: $updateUserBoxInput) {
+      id
+      letter
+    }
+  }
+`;
+
+export interface updateUserBoxData {
+  updateUserBox: {
+    id: string;
+    letter: string;
+  };
+}
+
+export interface updateUserBoxVariables {
+  updateUserBoxInput: {
+    id: string;
+    letter?: string;
+  };
+}

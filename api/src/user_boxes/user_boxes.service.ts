@@ -14,15 +14,13 @@ export class UserBoxesService {
   ) {}
 
   async create(createUserBoxInput: CreateUserBoxInput): Promise<UserBox> {
-    console.log('service createUserBoxInput', createUserBoxInput);
     let userBox = new UserBox();
 
     userBox.boxId = createUserBoxInput.boxId;
     userBox.name = createUserBoxInput.name;
     userBox.letter = createUserBoxInput.letter;
-    console.log('userBox', userBox);
+
     userBox = await this.userBoxRepository.save(userBox);
-    console.log('userBox saved', userBox);
     return userBox;
   }
 

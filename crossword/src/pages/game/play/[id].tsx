@@ -2,11 +2,16 @@ import { Play } from "@/components/Play";
 import React from "react";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { PlayPuzzle } from "@/components/PlayPuzzle";
 type PlayPageProps = {
   game_id: string;
 };
 
 export default function PlayPage({ game_id }: PlayPageProps) {
+  const router = useRouter();
+  const { player } = router.query;
+
   return (
     <>
       <Head>
@@ -15,7 +20,11 @@ export default function PlayPage({ game_id }: PlayPageProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Play gameId={game_id} />
+      {Boolean(player) ? (
+        <Play gameId={game_id} player={player as string} />
+      ) : (
+        <PlayPuzzle gameId={game_id} />
+      )}
     </>
   );
 }

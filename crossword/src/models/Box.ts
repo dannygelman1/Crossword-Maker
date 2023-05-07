@@ -12,6 +12,7 @@ export class Box {
   vertClue?: string = "";
   number?: number;
   input: string = "";
+  userBoxId: string = "";
   playState: "correct" | "wrong" | "unchecked" = "unchecked";
 
   constructor(
@@ -57,6 +58,10 @@ export class Box {
 
   setInput(input: string) {
     this.input = input;
+  }
+
+  setUserBoxId(id: string) {
+    this.userBoxId = id;
   }
 
   setPlayState(playState: "correct" | "wrong" | "unchecked") {

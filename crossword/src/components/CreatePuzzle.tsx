@@ -41,7 +41,8 @@ export const CreatePuzzle = ({}: CreatePuzzleProps): ReactElement => {
           >
             <input
               {...register("slug")}
-              className="bg-white w-40 h-8 rounded-md p-1"
+              className="bg-white w-40 h-8 rounded-md p-1 focus:outline-none focus:border-0"
+              autoComplete="off"
               onChange={() => {
                 setValidSlug(false);
                 setNeverChecked(true);

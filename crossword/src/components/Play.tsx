@@ -3,14 +3,21 @@ import { ReactElement, useEffect, useState, useRef } from "react";
 import { isEqual, uniqueId } from "lodash";
 import cn from "classnames";
 import { Input } from "./Input";
-import { createUserBox, getBoxes, getUserBoxes } from "@/lib/BoxService";
+import {
+  createUserBox,
+  getBoxes,
+  getUserBoxes,
+  updateUserBox,
+} from "@/lib/BoxService";
 import { CluesSection } from "./CluesSection";
 import { Viewport } from "./Viewport";
+import { getUserBoxesData } from "@/lib/gqlClient";
 
 interface PlayProps {
   gameId: string;
+  player: string;
 }
-export const Play = ({ gameId }: PlayProps): ReactElement => {
+export const Play = ({ gameId, player }: PlayProps): ReactElement => {
   const [selectedTextMode, setSelectedTextMode] = useState<Box | undefined>(
     undefined
   );
@@ -27,13 +34,7 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
   const [, setChecked] = useState<boolean>(false);
 
   useEffect(() => {
-    const newBoxes = setNumbersAndClues(boxes);
-    setBoxes(newBoxes);
-  }, [boxes.length]);
-
-  useEffect(() => {
     loadBoxes();
-    loadUserBoxes();
   }, []);
 
   const loadBoxes = async () => {
@@ -53,13 +54,9 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
           box.vert_clue ?? ""
         )
     );
-    const newBoxes = setNumbersAndClues(boxModels);
+    const userBoxes = await getUserBoxes(gameId, player);
+    const newBoxes = setNumbersAndClues(boxModels, userBoxes);
     setBoxes(newBoxes);
-  };
-
-  const loadUserBoxes = async () => {
-    const userBoxes = await getUserBoxes(gameId, "danny");
-    console.log("userBoxes", userBoxes);
   };
 
   return (
@@ -150,8 +147,15 @@ export const Play = ({ gameId }: PlayProps): ReactElement => {
                         onFocus={() => setSelectedTextMode(box)}
                         onBlur={() => setSelectedTextMode(undefined)}
                         updateBox={async (letter: string | null) => {
-                          console.log("update");
-                          await createUserBox(box.id, "danny", letter ?? "");
+                          if (box.userBoxId === "") {
+                            const userBox = await createUserBox(
+                              box.id,
+                              player,
+                              letter ?? ""
+                            );
+                            box.setUserBoxId(userBox.createUserBox.id);
+                          } else
+                            await updateUserBox(box.userBoxId, letter ?? "");
                           box.setInput(letter ?? "");
                         }}
                         onChange={() => {
@@ -214,7 +218,10 @@ const shouldHaveNumber = (box: Box, existing: Box[]): Clues => {
   else return "none";
 };
 
-const setNumbersAndClues = (boxes: Box[]): Box[] => {
+const setNumbersAndClues = (
+  boxes: Box[],
+  userBoxes?: getUserBoxesData
+): Box[] => {
   const copy = [...boxes];
   const sortedBoxes = copy.sort((a, b) => {
     if (a.y !== b.y) return b.y - a.y;
@@ -231,6 +238,13 @@ const setNumbersAndClues = (boxes: Box[]): Box[] => {
     } else {
       sortedBox?.unsetNumber();
       sortedBox.setClues("none");
+    }
+    const foundUserBox = userBoxes?.userBoxes.find(
+      (userBox) => userBox.boxId === sortedBox.id
+    );
+    if (foundUserBox) {
+      sortedBox.setInput(foundUserBox.letter);
+      sortedBox.setUserBoxId(foundUserBox.id);
     }
     newBoxes.push(sortedBox);
   }
