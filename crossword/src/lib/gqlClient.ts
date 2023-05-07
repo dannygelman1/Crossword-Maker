@@ -225,7 +225,7 @@ export interface getUserBoxesVariables {
 }
 
 export const UPDATE_USER_BOX = gql`
-  mutation update($updateUserBoxInput: UpdateUserBoxInput!) {
+  mutation updateUserBox($updateUserBoxInput: UpdateUserBoxInput!) {
     update(updateUserBoxInput: $updateUserBoxInput) {
       id
       letter

@@ -24,7 +24,9 @@ export class UserBoxesResolver {
   }
 
   @Mutation(() => UserBox)
-  update(@Args('updateUserBoxInput') updateUserBoxInput: UpdateUserBoxInput) {
+  updateUserBox(
+    @Args('updateUserBoxInput') updateUserBoxInput: UpdateUserBoxInput,
+  ) {
     return this.userBoxesService.update(
       updateUserBoxInput.id,
       updateUserBoxInput.letter,
