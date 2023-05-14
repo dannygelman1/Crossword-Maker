@@ -92,7 +92,7 @@ There are a few key features when creating the crossword puzzle.
 
 1. Using all the features listed above, you can create puzzles of any shape!
 
-https://user-images.githubusercontent.com/45411340/234771835-880aa5b2-bb95-441d-9a83-a681fac607bf.mp4
+https://github.com/dannygelman1/Crossword-Maker/assets/45411340/109afb4c-5174-44c3-81b6-a58fe68a11a6
 
 
 2. You can fill in the crossword with the answers and clues for your friend to solve.
