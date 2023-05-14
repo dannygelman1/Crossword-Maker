@@ -279,12 +279,9 @@ export const Editor = ({ gameId }: EditorProps): ReactElement => {
           </button>
         </div>
         <button
-          className={cn("rounded-md p-2 w-[150px]", {
-            "bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white":
-              mode === "create",
-            "bg-[#59586d] text-gray-200 hover:bg-[#73718d] hover:text-white":
-              mode !== "create",
-          })}
+          className={cn(
+            "rounded-md p-2 w-[150px] bg-[#3b3987] text-gray-200 hover:bg-[#4c49a3] hover:text-white"
+          )}
           onClick={() => setGameCodeCopied()}
         >
           {!isGameCodeCopied ? "Copy link" : "Copied!"}
