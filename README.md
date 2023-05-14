@@ -10,6 +10,13 @@ And so, the idea for crossword maker was born - a web application that lets you 
 
 ## How to play
 
+First you will land on this page where you can enter the name of your puzzle. 
+You have to check if the name has already been taken first.
+
+<img width="500" alt="Screen Shot 2023-05-14 at 5 44 12 PM" src="https://github.com/dannygelman1/Crossword-Maker/assets/45411340/c9af6cf1-e8da-41c0-865f-a6ad4fbebf4c">
+
+
+Then you will be sent to the editor where you can construct your puzzle. 
 There are a few key features when creating the crossword puzzle.
 
 <table style="border-collapse: collapse;">
@@ -85,6 +92,10 @@ There are a few key features when creating the crossword puzzle.
     </td>
   </tr>
 </table>
+
+Once you are happy with the puzzle, you can select the Copy Link button and send it to a friend. They will have to enter their name and can start playing!
+
+<img width="500" alt="Screen Shot 2023-05-14 at 5 44 58 PM" src="https://github.com/dannygelman1/Crossword-Maker/assets/45411340/55791003-da78-4db7-b497-60bbcd103d58">
 
 # Example of a frog shaped crossword
 
