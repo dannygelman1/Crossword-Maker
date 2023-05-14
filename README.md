@@ -1,5 +1,14 @@
 # Crossword Maker
 
+# Table of Contents
+- [Inspiration](#inspiration)
+- [How to play](#how-to-play)
+  - [Example](#example-of-a-frog-shaped-crossword)
+- [Code Structure](#code-structure)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
+  - [Database](#database)
+
 ## Inspiration
 
 For the last few months I got really into the New York Times Daily Mini. Its just a fun way for me to start my morning and wake my brain up in a few minutes.
@@ -97,22 +106,28 @@ Once you are happy with the puzzle, you can select the Copy Link button and send
 
 <img width="500" alt="Screen Shot 2023-05-14 at 5 44 58 PM" src="https://github.com/dannygelman1/Crossword-Maker/assets/45411340/55791003-da78-4db7-b497-60bbcd103d58">
 
-# Example of a frog shaped crossword
+## Example of a frog shaped crossword
 
-## Making the puzzle
-
-1. Using all the features listed above, you can create puzzles of any shape!
+### Making the puzzle shape
+Using all the features listed above, you can create puzzles of any shape!
 
 https://github.com/dannygelman1/Crossword-Maker/assets/45411340/109afb4c-5174-44c3-81b6-a58fe68a11a6
 
-
-2. You can fill in the crossword with the answers and clues for your friend to solve.
+### Setting the answers and clues
+You can fill in the crossword with the answers and clues for your friend to solve.
 
 https://user-images.githubusercontent.com/45411340/235391052-43d3b803-9e4c-4ada-978d-d87f599e21b5.mp4
 
-
-3. You can copy the play link to send to you friend to play and they can check the puzzle as much as they want!
+### Sending the puzzle
+You can copy the play link to send to you friend to play and they can check the puzzle as much as they want!
 
 https://github.com/dannygelman1/Crossword-Maker/assets/45411340/0df8a28a-3e0f-4bc5-8a1c-417d1178f65a
 
+## Code structure
 
+### Frontend
+
+### Backend 
+
+### Database
+ 
