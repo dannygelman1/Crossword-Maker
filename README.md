@@ -102,5 +102,6 @@ https://user-images.githubusercontent.com/45411340/235391052-43d3b803-9e4c-4ada-
 
 3. You can copy the play link to send to you friend to play and they can check the puzzle as much as they want!
 
-https://user-images.githubusercontent.com/45411340/235391066-bf56deb3-2982-4026-b53b-b5b71fb8ce0d.mp4
+https://github.com/dannygelman1/Crossword-Maker/assets/45411340/0df8a28a-3e0f-4bc5-8a1c-417d1178f65a
+
 
