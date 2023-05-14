@@ -6,7 +6,7 @@ interface PlayPuzzleProps {
   gameId: string;
 }
 
-export const PlayPuzzle = ({ gameId }: PlayPuzzleProps): ReactElement => {
+export const JoinPuzzle = ({ gameId }: PlayPuzzleProps): ReactElement => {
   interface GameFormFields {
     player: string;
   }

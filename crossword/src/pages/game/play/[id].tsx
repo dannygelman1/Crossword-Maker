@@ -3,7 +3,7 @@ import React from "react";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { PlayPuzzle } from "@/components/PlayPuzzle";
+import { JoinPuzzle } from "@/components/JoinPuzzle";
 type PlayPageProps = {
   game_id: string;
 };
@@ -23,7 +23,7 @@ export default function PlayPage({ game_id }: PlayPageProps) {
       {Boolean(player) ? (
         <Play gameId={game_id} player={player as string} />
       ) : (
-        <PlayPuzzle gameId={game_id} />
+        <JoinPuzzle gameId={game_id} />
       )}
     </>
   );
