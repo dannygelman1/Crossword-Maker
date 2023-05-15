@@ -125,6 +125,43 @@ https://github.com/dannygelman1/Crossword-Maker/assets/45411340/0df8a28a-3e0f-4b
 
 ## Code structure
 
+This is shows the crossword creation flow:
+```mermaid
+sequenceDiagram
+    rect rgb(235, 213, 205)
+    index.tsx ->>+ CreatePuzzle.tsx: directs to
+    CreatePuzzle.tsx ->>+ crossword-api: queries to check if puzzle name is unique
+    note right of crossword-api: Starting a new crossword puzzle
+    crossword-api ->>+ CreatePuzzle.tsx: responds with answer of whether puzzle name is unique
+    CreatePuzzle.tsx ->>+ game/edit/[id].tsx getServerSideProps: directs to (with game_id)
+    game/edit/[id].tsx getServerSideProps ->>+ Editor.tsx: directs to
+    end
+    rect rgb(235, 213, 205)
+    note right of crossword-api: Creating the crossword puzzle within the Editor
+    Editor.tsx ->>+ crossword-api: sends mutations for puzzle edits
+    crossword-api ->>+ Editor.tsx: responds with ids for newly created entities
+    end
+    rect rgb(235, 213, 205)
+    note right of Editor.tsx: Sending link to friend
+    Editor.tsx ->>+ game/play/[id].tsx getServerSideProps: directs to (with game_id)
+    end
+```
+
+This shows the sending to a friend and answering flow :
+```mermaid
+sequenceDiagram
+    rect rgb(235, 213, 205)
+    game/play/[id].tsx ->>+ JoinPuzzle.tsx: directs to (with game_id)
+    note right of JoinPuzzle.tsx: Friend joins crossword puzzle
+    JoinPuzzle.tsx ->>+ game/play/[id].tsx: directs to (with query param player={playerName})
+    game/play/[id].tsx ->>+ Play.tsx: directs to (with game_id)
+    end
+    rect rgb(235, 213, 205)
+    note right of Play.tsx: Friend plays crossword puzzle
+    Play.tsx ->>+ crossword-api: sends mutations for puzzle answers
+    crossword-api ->>+ Play.tsx: responds with ids for newly created entities
+    end
+```
 ### Frontend
 
 ### Backend 
