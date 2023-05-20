@@ -11,7 +11,7 @@
 
 ## Inspiration
 
-For the last few months I got really into the New York Times Daily Mini. Its just a fun way for me to start my morning and wake my brain up in a few minutes.
+Over the last few months I got really into the New York Times Daily Mini. It's just a fun way for me to start my morning and wake my brain up in a few minutes.
 
 One day, as I was trying to come up with a birthday present idea for a friend, I thought - "Wouldn't it be great to make them a personalized crossword puzzle of words related to our shared memories?"
 
@@ -102,14 +102,14 @@ There are a few key features when creating the crossword puzzle.
   </tr>
 </table>
 
-Once you are happy with the puzzle, you can select the Copy Link button and send it to a friend. They will have to enter their name and can start playing!
+Once you are happy with the puzzle, you can select the `copy link` button and send it to a friend. They will have to enter their name and can start playing!
 
 <img width="500" alt="Screen Shot 2023-05-14 at 5 44 58 PM" src="https://github.com/dannygelman1/Crossword-Maker/assets/45411340/55791003-da78-4db7-b497-60bbcd103d58">
 
 ## Example of a frog shaped crossword
 
 ### Making the puzzle shape
-Using all the features listed above, you can create puzzles of any shape!
+Using all the features listed above, you can create puzzles of any shape, like this pixel art frog!
 
 https://github.com/dannygelman1/Crossword-Maker/assets/45411340/109afb4c-5174-44c3-81b6-a58fe68a11a6
 
@@ -119,13 +119,13 @@ You can fill in the crossword with the answers and clues for your friend to solv
 https://user-images.githubusercontent.com/45411340/235391052-43d3b803-9e4c-4ada-978d-d87f599e21b5.mp4
 
 ### Sending the puzzle
-You can copy the play link to send to you friend to play and they can check the puzzle as much as they want!
+You can copy the link to send to your friend to play and they can `check puzzle` as much as they want!
 
 https://github.com/dannygelman1/Crossword-Maker/assets/45411340/0df8a28a-3e0f-4bc5-8a1c-417d1178f65a
 
 ## Code structure
 
-This is shows the crossword creation flow:
+This shows the crossword creation flow:
 ```mermaid
 sequenceDiagram
     rect rgb(235, 213, 205)
@@ -147,7 +147,7 @@ sequenceDiagram
     end
 ```
 
-This shows the sending to a friend and answering flow :
+This shows the sending to a friend and answering flow:
 ```mermaid
 sequenceDiagram
     rect rgb(235, 213, 205)
@@ -188,17 +188,19 @@ export const getBoxes = async (id: string): Promise<getBoxesData> => {
 
 And here is my `boxes` query in gqlClient.ts:
 ```
-query boxes($id: String!) {
-  boxes(id: $id) {
-    id
-    letter
-    x
-    y
-    isblock
-    vert_clue
-    horiz_clue
+export const GET_BOXES = gql`
+  query boxes($id: String!) {
+    boxes(id: $id) {
+      id
+      letter
+      x
+      y
+      isblock
+      vert_clue
+      horiz_clue
+    }
   }
-} 
+`;
 ```
 
 ### Backend (typescript, Nest.js)
