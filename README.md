@@ -164,7 +164,31 @@ sequenceDiagram
 ```
 ### Frontend
 
-### Backend 
-
+### Backend (typescript, Nest.js)
+My api is organized into games, boxes, and user_boxes:
+ - `games` - each crossword puzzle is a `game`
+ - `boxes` - each crossword puzzle is made of multiple `boxes`
+ - `user_boxes` - each box can have multiple `user_boxes` associated with it, one for every new player's guess
+ 
+Here are the queries and mutations:
+- games
+  - queries
+    - findGame
+  - mutations
+    - createGame
+- boxes
+  - queries
+    - box
+    - boxes
+  - mutations
+    - createBox
+    - updateBox
+    - deleteBox
+- user_boxes
+  - queries
+    - user_boxes
+  - mutations
+    - createUserBox
+    - updateUserBox
 ### Database
  
