@@ -5,7 +5,7 @@
 - [How to play](#how-to-play)
   - [Example](#example-of-a-frog-shaped-crossword)
 - [Code Structure](#code-structure)
-  - [Frontend](#frontend-typescript-react-nextjs)
+  - [Frontend](#frontend-typescript-react-tailwind-nextjs)
   - [Backend](#backend-typescript-nestjs)
   - [Database](#database-postgresql)
 
@@ -162,7 +162,42 @@ sequenceDiagram
     crossword-api ->>+ Play.tsx: responds with ids for newly created entities
     end
 ```
-### Frontend (typescript, react, Next.js)
+### Frontend (typescript, react, tailwind, Next.js)
+
+My frontend is has 4 major pages: CreatePuzzle, Editor, JoinPuzzle, Play. 
+
+- `CreatePuzzle` - this is where you enter the name of the crossword puzzle you want to create
+- `Editor` - this is where you create the crossword puzzle
+- `JoinPuzzle` - this is where your friend first lands when you send them the link to your puzzle, and where they can enter their name
+- `Play` - this is where they can play your crossword puzzle
+
+Each page uses queries and mutations from my `BoxService.ts`, which is a light wrapper for the GraphQL queries/mutations in `gqlClient.ts`
+For example here is my getBoxes function in BoxService.ts:
+```
+export const getBoxes = async (id: string): Promise<getBoxesData> => {
+  const boxesData = await gql.request<getBoxesData, getBoxesVariables>(
+    GET_BOXES,
+    {
+      id,
+    }
+  );
+  return boxesData;
+};
+```
+And here is my `boxes` query in gqlClient.ts:
+```
+query boxes($id: String!) {
+  boxes(id: $id) {
+    id
+    letter
+    x
+    y
+    isblock
+    vert_clue
+    horiz_clue
+  }
+} 
+```
 
 ### Backend (typescript, Nest.js)
 My api is organized into games, boxes, and user_boxes:
