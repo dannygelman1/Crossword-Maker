@@ -172,6 +172,7 @@ My frontend is has 4 major pages: CreatePuzzle, Editor, JoinPuzzle, Play.
 - `Play` - this is where they can play your crossword puzzle
 
 Each page uses queries and mutations from my `BoxService.ts`, which is a light wrapper for the GraphQL queries/mutations in `gqlClient.ts`
+
 For example here is my getBoxes function in BoxService.ts:
 ```
 export const getBoxes = async (id: string): Promise<getBoxesData> => {
@@ -184,6 +185,7 @@ export const getBoxes = async (id: string): Promise<getBoxesData> => {
   return boxesData;
 };
 ```
+
 And here is my `boxes` query in gqlClient.ts:
 ```
 query boxes($id: String!) {
@@ -230,9 +232,9 @@ Here are the queries and mutations:
 
 Here is how I store my data. 
 
- - games - each row corresponds to a new crossword puzzle game
- - boxes - each row corresponds to one box in one crossword puzzle.
- - user_boxes - each row corresponds to one player's answer to one box in one crossword puzzle.
+ - `games` - each row corresponds to a new crossword puzzle game
+ - `boxes` - each row corresponds to one box in one crossword puzzle.
+ - `user_boxes` - each row corresponds to one player's answer to one box in one crossword puzzle.
 
 ```mermaid
 classDiagram
