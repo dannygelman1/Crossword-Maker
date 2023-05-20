@@ -5,9 +5,9 @@
 - [How to play](#how-to-play)
   - [Example](#example-of-a-frog-shaped-crossword)
 - [Code Structure](#code-structure)
-  - [Frontend](#frontend)
-  - [Backend](#backend)
-  - [Database](#database)
+  - [Frontend](#frontend-typescript-react-nextjs)
+  - [Backend](#backend-typescript-nestjs)
+  - [Database](#database-postgresql)
 
 ## Inspiration
 
@@ -162,7 +162,7 @@ sequenceDiagram
     crossword-api ->>+ Play.tsx: responds with ids for newly created entities
     end
 ```
-### Frontend
+### Frontend (typescript, react, Next.js)
 
 ### Backend (typescript, Nest.js)
 My api is organized into games, boxes, and user_boxes:
@@ -190,5 +190,49 @@ Here are the queries and mutations:
   - mutations
     - createUserBox
     - updateUserBox
-### Database
+
+### Database (PostgreSQL)
+
+Here is how I store my data. 
+
+ - games - each row corresponds to a new crossword puzzle game
+ - boxes - each row corresponds to one box in one crossword puzzle.
+ - user_boxes - each row corresponds to one player's answer to one box in one crossword puzzle.
+
+```mermaid
+classDiagram
+direction LR
+games "" --> "*" boxes : has many
+boxes "" --> "*" user_boxes : has many
+
+    class games {
+        +uuid id
+        +text slug
+        +timestamptz created_at
+    	+timestamptz updated_at
+    }
+
+    class boxes {
+    	+uuid id
+        +text? letter
+    	+integer x
+    	+integer y
+        +boolean isblock
+        +text game_id
+        +text? vert_clue
+        +text? horiz_clue
+        +timestamptz created_at
+    	+timestamptz updated_at
+    }
+
+    class user_boxes {
+    	+uuid id
+        +uuid box_id
+    	+text name
+    	+text letter
+        +timestamptz created_at
+    	+timestamptz updated_at
+
+    }
+```
  
